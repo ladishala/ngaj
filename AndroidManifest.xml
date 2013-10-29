@@ -26,6 +26,13 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <service android:name="org.andnav.osm.services.OpenStreetMapTileProviderService"
+                 android:process=":remote"
+                 android:label="OpenStreetMapTileProviderService">
+            <intent-filter>
+                <action android:name="org.andnav.osm.services.IOpenStreetMapTileProviderService" />
+              </intent-filter>
+        </service>
     </application>
 
 </manifest>
