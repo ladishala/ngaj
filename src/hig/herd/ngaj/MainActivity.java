@@ -5,40 +5,54 @@ import org.brickred.socialauth.android.SocialAuthAdapter;
 import org.brickred.socialauth.android.SocialAuthAdapter.Provider;
 import org.brickred.socialauth.android.SocialAuthError;
 import org.brickred.socialauth.android.SocialAuthListener;
-import org.osmdroid.DefaultResourceProxyImpl;
-import org.osmdroid.ResourceProxy;
 import org.osmdroid.util.GeoPoint;
+import org.osmdroid.views.MapController;
 import org.osmdroid.views.MapView;
+import org.osmdroid.views.overlay.PathOverlay;
+
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.Bitmap.Config;
 import android.graphics.Canvas;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore.Images;
+import android.support.v4.content.LocalBroadcastManager;
+import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class MainActivity extends Activity {
 
 	//Declare social networking share components
 	SocialAuthAdapter adapter;
-	boolean status;
 	LinearLayout bar;
 	AlertDialog.Builder Alert;
+	TextView helloworld;
+	PathOverlay myPath;
+	MapView mapView;
+	MapController mapController;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+		
 
+		myPath=new PathOverlay(Color.RED, this);
+				
+		helloworld = (TextView)findViewById(R.id.textView1);
 		bar = (LinearLayout) findViewById(R.id.linearbar);
 		bar.setBackgroundResource(R.drawable.bar_gradient);
 
@@ -50,12 +64,16 @@ public class MainActivity extends Activity {
 		adapter.addProvider(Provider.EMAIL, R.drawable.other);
 		adapter.enable(bar);
 		
-		MapView mapView = (MapView) findViewById(R.id.mapview);
+		mapView = (MapView) findViewById(R.id.mapview);
         mapView.setBuiltInZoomControls(true);
-        mapView.getController().setZoom(3);
+        mapController = mapView.getController();
+        mapController.setZoom(3);
 
-         
-
+        
+        IntentFilter intentFilter = new IntentFilter("hig.herd.NGAJ.RECEIVEDATA");
+        LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(this.ReceiveData ,intentFilter);      
+        
+        GPSservice gps = new GPSservice(getApplicationContext());
 
 	}
 
@@ -102,10 +120,7 @@ public class MainActivity extends Activity {
 			}
 		});
 		Alert.show();
-	
-		
-		
-		
+				
 	}
 	
 	private void postonother()
@@ -117,6 +132,16 @@ public class MainActivity extends Activity {
 		share.setType("image/jpeg");
 		share.putExtra(Intent.EXTRA_STREAM, bmpUri);
 		startActivity(Intent.createChooser(share, "Share Image"));
+	}
+	
+	private void addPoint(double Latitude,double Longitude)
+	{
+		GeoPoint Point = new GeoPoint(Latitude,Longitude);
+		if(Latitude!=0 && Longitude!=0)
+			myPath.addPoint(Point);
+			mapView.getOverlays().add(myPath);
+			mapController.setCenter(Point);
+			mapController.setZoom(17);
 	}
 	
 	private final class ResponseListener implements DialogListener {
@@ -175,5 +200,18 @@ public class MainActivity extends Activity {
 
 		}
 	}
+	private BroadcastReceiver ReceiveData = new BroadcastReceiver() {
+		
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			// TODO Auto-generated method stub
+			final int Steps=intent.getIntExtra("Steps",0);
+			final double Latitude = intent.getDoubleExtra("Latitude", 0);
+			final double Longitude = intent.getDoubleExtra("Longitude", 0);
+			addPoint(Latitude,Longitude);
+			helloworld.setText("Total Steps: "+Integer.toString(Steps));
+			Log.d("BroadCast Recieveri","I Got The message From Service: "+Integer.toString(Steps)+" Latitude: "+Double.toString(Latitude)+" Longitude: "+Double.toString(Longitude));
+		}
+	}; 
 
 }
