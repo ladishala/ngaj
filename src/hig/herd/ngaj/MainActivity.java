@@ -1,5 +1,9 @@
 package hig.herd.ngaj;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+
 import org.brickred.socialauth.android.DialogListener;
 import org.brickred.socialauth.android.SocialAuthAdapter;
 import org.brickred.socialauth.android.SocialAuthAdapter.Provider;
@@ -24,6 +28,7 @@ import android.graphics.Bitmap.Config;
 import android.graphics.Canvas;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore.Images;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
@@ -43,6 +48,7 @@ public class MainActivity extends Activity {
 	PathOverlay myPath;
 	MapView mapView;
 	MapController mapController;
+
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -89,9 +95,16 @@ public class MainActivity extends Activity {
 		Bitmap bitmap = Bitmap.createBitmap(view.getWidth(), view.getHeight(),Config.ARGB_8888);
 		Canvas canvas = new Canvas(bitmap);
 		view.draw(canvas);
+		
 		return bitmap;
 	}
 
+/*	public Uri getImageUri(Context inContext, Bitmap inImage) {
+		  ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+		  inImage.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
+		  String path = Images.Media.insertImage(inContext.getContentResolver(), inImage, "Title", null);
+		  return Uri.parse(path);
+		} */
 	private void showalert(String arg)
 	{
 		Alert = new AlertDialog.Builder(this);
@@ -125,19 +138,35 @@ public class MainActivity extends Activity {
 	
 	private void postonother()
 	{
-
-		String pathofBmp = Images.Media.insertImage(this.getContentResolver(),screenShot(bar),"Screenshot", null);
-	    Uri bmpUri = Uri.parse(pathofBmp);
-		Intent share = new Intent(Intent.ACTION_SEND);
-		share.setType("image/jpeg");
-		share.putExtra(Intent.EXTRA_STREAM, bmpUri);
-		startActivity(Intent.createChooser(share, "Share Image"));
+				
+		String filename = "NGAJ_lastScreenShot.png";
+		File sd = Environment.getExternalStorageDirectory();
+		File dest = new File(sd, filename);
+		Bitmap bitmap = screenShot(bar);
+		
+		try {
+		     FileOutputStream out = new FileOutputStream(dest);
+		     bitmap.compress(Bitmap.CompressFormat.PNG, 90, out);
+		     out.flush();
+		     out.close();
+		     
+		     Uri yourUri = Uri.fromFile(dest);
+			    Intent share = new Intent(Intent.ACTION_SEND);
+				share.setType("image/jpeg");
+				share.putExtra(Intent.EXTRA_STREAM, yourUri);
+				
+				startActivity(Intent.createChooser(share, "Share Image"));
+		} catch (Exception e) {
+		     
+		}
+		
 	}
 	
 	private void addPoint(double Latitude,double Longitude)
 	{
 		GeoPoint Point = new GeoPoint(Latitude,Longitude);
 		if(Latitude!=0 && Longitude!=0)
+			
 			myPath.addPoint(Point);
 			mapView.getOverlays().add(myPath);
 			mapController.setCenter(Point);
@@ -156,6 +185,9 @@ public class MainActivity extends Activity {
 			}
 			else
 			{
+				/*Toast.makeText(MainActivity.this,
+						"Others clicked " , Toast.LENGTH_LONG)
+						.show();*/
 				postonother();
 			}
 
