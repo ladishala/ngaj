@@ -40,8 +40,11 @@ import android.widget.Toast;
 
 public class MainActivity extends Activity {
 
-	//Declare social networking share components
-	//and the map copmponents
+	/**
+	 * Declare social networking share components
+	 * and the map components
+	 */
+
 	SocialAuthAdapter adapter;
 	LinearLayout bar;
 	AlertDialog.Builder Alert;
@@ -200,9 +203,8 @@ public class MainActivity extends Activity {
 	}
 	
 	/**
-	 * 
-	 * @author Gena
-	 *
+	 * Deciding what to do when a certain element of the SocialAuthAdapter
+	 * is selected.  
 	 */
 	private final class ResponseListener implements DialogListener {
 		public void onComplete(Bundle values) {
@@ -216,9 +218,6 @@ public class MainActivity extends Activity {
 			}
 			else
 			{
-				/*Toast.makeText(MainActivity.this,
-						"Others clicked " , Toast.LENGTH_LONG)
-						.show();*/
 				postonother();
 			}
 
@@ -243,6 +242,11 @@ public class MainActivity extends Activity {
 		}
 	}
 
+	/**
+	 * The message to be displayed to the user after posting. Depending on the status 
+	 * of the post, if it was successful. 
+	 * If an error occurs perform no actions.  
+	 */
 	private final class MessageListener implements SocialAuthListener<Integer> {
 		@Override
 		public void onExecute(String provider, Integer t) {
@@ -263,6 +267,12 @@ public class MainActivity extends Activity {
 
 		}
 	}
+	
+	/**
+	 * Declaring and implementing a Broadcast Receivers. It will receive data form and save them
+	 * in Steps, Latitude and Longitude variables. Also it calls the addPoint function which draws a point on map. 
+	 * Log.d - used for  testing purpose!! 
+	 */
 	private BroadcastReceiver ReceiveData = new BroadcastReceiver() {
 		
 		@Override
