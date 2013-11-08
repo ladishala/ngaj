@@ -41,6 +41,7 @@ import android.widget.Toast;
 public class MainActivity extends Activity {
 
 	//Declare social networking share components
+	//and the map copmponents
 	SocialAuthAdapter adapter;
 	LinearLayout bar;
 	AlertDialog.Builder Alert;
@@ -70,15 +71,24 @@ public class MainActivity extends Activity {
 		adapter.addProvider(Provider.EMAIL, R.drawable.other);
 		adapter.enable(bar);
 		
+		
+		/**
+		 * Get the MapView widget, set the zoom controllers 
+		 * and set the initial zoom level of the map
+		 */
 		mapView = (MapView) findViewById(R.id.mapview);
         mapView.setBuiltInZoomControls(true);
         mapController = mapView.getController();
         mapController.setZoom(3);
 
-        
+        /**
+         * Declare and initialize the intent for receiving data from the
+         * specific broadcast receiver
+         */
         IntentFilter intentFilter = new IntentFilter("hig.herd.NGAJ.RECEIVEDATA");
         LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(this.ReceiveData ,intentFilter);      
         
+        //Declare an object of the service we created
         GPSservice gps = new GPSservice(getApplicationContext());
 
 	}
@@ -90,7 +100,10 @@ public class MainActivity extends Activity {
 		return true;
 	}
    
-	 
+	/**
+	 * The function for taking a screenshot of the view given as
+	 * parameter. It returns the bitmap (screenshot) created. 
+	 */
 	public Bitmap screenShot(View view) {
 		Bitmap bitmap = Bitmap.createBitmap(view.getWidth(), view.getHeight(),Config.ARGB_8888);
 		Canvas canvas = new Canvas(bitmap);
