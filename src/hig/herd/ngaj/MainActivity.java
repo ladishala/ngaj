@@ -108,16 +108,18 @@ public class MainActivity extends Activity {
 		Bitmap bitmap = Bitmap.createBitmap(view.getWidth(), view.getHeight(),Config.ARGB_8888);
 		Canvas canvas = new Canvas(bitmap);
 		view.draw(canvas);
-		
 		return bitmap;
 	}
 
-/*	public Uri getImageUri(Context inContext, Bitmap inImage) {
-		  ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-		  inImage.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
-		  String path = Images.Media.insertImage(inContext.getContentResolver(), inImage, "Title", null);
-		  return Uri.parse(path);
-		} */
+
+	/**
+	 * Defines the dialog that will show up allowing the user to decide whether he/she wants 
+	 * to post or not. If the answer is positive the image will be shared using 
+	 * a built in method of the SouthAuth object. The parameters required by the method are
+	 * the description that will be used when sharing the image, the image's name, the bitmap (actual image 
+	 * to be shared) and a SocialAuthListener object.
+	 * If the user chooses not to share the image no action will be performed.
+	 */
 	private void showalert(String arg)
 	{
 		Alert = new AlertDialog.Builder(this);
@@ -149,6 +151,13 @@ public class MainActivity extends Activity {
 				
 	}
 	
+	/**
+	 * This method allows posting the image on other social networks.
+	 * First it determines the directory where the image will be stored in the phone, then puts 
+	 * the image into that place. Gets the Uri of the saved image. 
+	 * The image will be shared using "share" intent.  
+	 * 
+	 */
 	private void postonother()
 	{
 				
@@ -175,6 +184,10 @@ public class MainActivity extends Activity {
 		
 	}
 	
+	/**
+	 * Draws a point into the map using the coordinates given as parameters.
+	 * This is done if the Latitude and Longitude are not 0, since this is the default value.
+	 */
 	private void addPoint(double Latitude,double Longitude)
 	{
 		GeoPoint Point = new GeoPoint(Latitude,Longitude);
@@ -186,6 +199,11 @@ public class MainActivity extends Activity {
 			mapController.setZoom(17);
 	}
 	
+	/**
+	 * 
+	 * @author Gena
+	 *
+	 */
 	private final class ResponseListener implements DialogListener {
 		public void onComplete(Bundle values) {
 
