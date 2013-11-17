@@ -33,14 +33,17 @@ LocationListener
 	private double max=0;
 	private double min=100;
 	Intent Send;
-	public GPSservice(Context context) {
+	public GPSservice() {
 		super();
-		// TODO Auto-generated constructor stub
-		this.mContext = context;
-		declareListeners();
 		}
 
-	
+	public void onCreate()
+	{
+		getApplicationContext();
+		this.mContext=this.getApplicationContext();
+		declareListeners();
+		
+	}
 	protected void declareListeners() {
 		// TODO Auto-generated method stub
 		
@@ -50,8 +53,8 @@ LocationListener
 		
 		
 		mLocationManager = (LocationManager)mContext.getSystemService(LOCATION_SERVICE);
-		mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 4000, 0, this);
-		mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,5000,0,this);
+		mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 5000, 5, this);
+		mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,5000,5,this);
 		
 		
 		Send = new Intent();
@@ -59,7 +62,12 @@ LocationListener
 		Send.setAction("hig.herd.NGAJ.RECEIVEDATA");
 		LocalBroadcastManager.getInstance(mContext).sendBroadcast(Send);
 	}
-
+	public void onDestroy()
+	{
+		mSensorManager.unregisterListener(this);
+		mLocationManager.removeUpdates(this);
+		
+	}
 	@Override
 	public void onAccuracyChanged(Sensor sensor, int accuracy) {
 		// TODO Auto-generated method stub

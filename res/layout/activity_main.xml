@@ -6,34 +6,191 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context=".MainActivity"
-     >
-
-    <TextView
-        android:id="@+id/textView1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/hello_world"
-       />
-
-    <LinearLayout
-        android:id="@+id/linearbar"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:orientation="horizontal" >
-    </LinearLayout>
+    android:background="#00AABB"
+    tools:context=".MainActivity" >
 
     <org.osmdroid.views.MapView
         android:id="@+id/mapview"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/linearbar"
-        android:layout_alignLeft="@+id/textView1"
-        android:layout_below="@+id/textView1"
+        android:layout_above="@+id/statisticsr1"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="37dp"
         android:clickable="true" >
 
     </org.osmdroid.views.MapView>
+
+    <Button
+        android:id="@+id/btnStart"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/statisticsr1"
+        android:layout_alignParentBottom="true"
+        android:layout_alignRight="@+id/btnCamera"
+        android:text="@string/Start"
+        android:onClick="startRecording" />
+
+    <Button
+        android:id="@+id/btnTracks"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/btnStart"
+        android:layout_alignLeft="@+id/btnStart"
+        android:text="@string/ViewTracks" />
+
+    <LinearLayout
+        android:id="@+id/statisticsr2"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/btnStats"
+        android:layout_alignRight="@+id/btnCamera"
+        android:orientation="horizontal"
+         >
+
+        <LinearLayout
+            android:id="@+id/speedlayout"
+            android:layout_width="145dp"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="2dp"
+            android:layout_marginTop="2dp"
+            android:background="#FFFFFF"
+            android:orientation="vertical" >
+
+             <TextView
+                 android:id="@+id/speed1"
+                android:layout_width="match_parent"
+                android:gravity="center" 
+                 android:layout_height="wrap_content"
+                 android:text="@string/speed" />
+
+            <TextView
+                android:id="@+id/speed2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@string/startSpeed"
+                android:textSize="20sp" />
+
+            <TextView
+                android:id="@+id/speed3"
+                android:layout_width="match_parent"
+                android:gravity="center" 
+                android:layout_height="wrap_content"
+                android:text="@string/speedFormat" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/stepslayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="2dp"
+            android:layout_marginTop="2dp"
+            android:background="#FFFFFF"
+            android:gravity="center"
+            android:orientation="vertical" >
+
+            <TextView
+                android:id="@+id/steps1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@string/steps" />
+
+            <TextView
+                android:id="@+id/steps2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@string/startSteps"
+                android:textSize="24sp" />
+
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/statisticsr1"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/statisticsr2"
+        android:layout_alignLeft="@+id/statisticsr2"
+        android:orientation="horizontal"
+		>
+
+        <LinearLayout
+            android:id="@+id/timelayout"
+            android:layout_width="145dp"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="2dp"
+            android:layout_marginTop="2dp"
+            android:orientation="vertical"
+            android:background="#FFFFFF" >
+
+            <TextView
+                android:id="@+id/time1"
+                android:layout_width="match_parent"
+                android:gravity="center" 
+                android:layout_height="wrap_content"
+                android:text="@string/time" />
+
+            <TextView
+                android:id="@+id/time2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@string/startTime"
+                android:textSize="20sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/distancelayout"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="2dp"
+            android:layout_marginTop="2dp"
+            android:background="#FFFFFF"
+            android:orientation="vertical" >
+
+            <TextView
+                android:id="@+id/distance1"
+                android:layout_width="match_parent"
+                android:gravity="center" 
+                android:layout_height="wrap_content"
+                android:text="@string/distance" />
+
+            <TextView
+                android:id="@+id/distance2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@string/startDistance"
+                android:textSize="20sp" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <ProgressBar
+        android:id="@+id/progressBar1"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/mapview"
+        android:layout_alignParentTop="true"
+        android:layout_alignRight="@+id/mapview" />
+
+    <Button
+        android:id="@+id/btnStats"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/btnStart"
+        android:layout_toLeftOf="@+id/btnCamera"
+        android:layout_toRightOf="@+id/btnTracks"
+        android:text="@string/ViewStats" />
+
+    <Button
+        android:id="@+id/btnCamera"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignRight="@+id/mapview"
+        android:layout_below="@+id/statisticsr2"
+        android:text="@string/Camera" />
 
 </RelativeLayout>
