@@ -21,5 +21,7 @@
     <string name="Camera">Camera</string>
     <string name="ViewStats">Stats</string>
     <string name="ViewTracks">Tracks</string>
+    <string name="Text">Well Done! You have finished this session.</string>
+    <string name="title_activity_stats">Stats</string>
 
 </resources>

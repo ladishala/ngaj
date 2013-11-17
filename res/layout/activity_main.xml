@@ -183,7 +183,8 @@
         android:layout_above="@+id/btnStart"
         android:layout_toLeftOf="@+id/btnCamera"
         android:layout_toRightOf="@+id/btnTracks"
-        android:text="@string/ViewStats" />
+        android:text="@string/ViewStats"
+        android:onClick="statsClick" />
 
     <Button
         android:id="@+id/btnCamera"
@@ -191,6 +192,7 @@
         android:layout_height="wrap_content"
         android:layout_alignRight="@+id/mapview"
         android:layout_below="@+id/statisticsr2"
-        android:text="@string/Camera" />
+        android:text="@string/Camera"
+        android:onClick="cameraClick" />
 
 </RelativeLayout>

@@ -27,6 +27,7 @@ import android.graphics.Bitmap.Config;
 import android.view.Menu;
 import android.view.View;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -45,13 +46,41 @@ public class Results extends Activity {
 	PathOverlay myPath;
 	MapView mapView;
 	MapController mapController;
+	TextView txtSteps;
+	TextView txtTime;
+	TextView txtSpeed;
+	TextView txtSpeedExtras;
+	TextView txtDistance;
+	RelativeLayout Layout1;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_results);
-		helloworld = (TextView)findViewById(R.id.helloworld);
-		bar = (LinearLayout) findViewById(R.id.linearbar);
+		
+		Intent i = getIntent();
+		
+		helloworld = (TextView)findViewById(R.id.rhelloworld);
+		txtSteps = (TextView)findViewById(R.id.rsteps2);	
+		txtSpeed = (TextView)findViewById(R.id.rspeed2);
+		txtSpeedExtras=(TextView)findViewById(R.id.rspeed3);
+		txtTime = (TextView)findViewById(R.id.rtime2);	
+		txtDistance = (TextView)findViewById(R.id.rdistance2);
+		String strSteps=i.getStringExtra("Steps");
+		String strSpeed=i.getStringExtra("Speed");
+		String strSpeedExtras=i.getStringExtra("SpeedExtras");
+		String strTime=i.getStringExtra("Time");
+		String strDistance=i.getStringExtra("Distance");
+		txtSteps.setText(strSteps);
+		txtSpeed.setText(strSpeed);
+		txtSpeedExtras.setText(strSpeedExtras);
+		txtTime.setText(strTime);
+		txtDistance.setText(strDistance);
+		Layout1=(RelativeLayout)findViewById(R.id.Layout2);
+		
+		
+		
+		bar = (LinearLayout) findViewById(R.id.linearbar2);
 		bar.setBackgroundResource(R.drawable.bar_gradient);
 
 		adapter = new SocialAuthAdapter(new ResponseListener());
@@ -69,7 +98,7 @@ public class Results extends Activity {
 		 * Get the MapView widget, set the zoom controllers 
 		 * and set the initial zoom level of the map
 		 */
-		mapView = (MapView) findViewById(R.id.mapview);
+		mapView = (MapView) findViewById(R.id.rmapview);
         mapView.setBuiltInZoomControls(true);
         mapController = mapView.getController();
         mapController.setZoom(3);
@@ -115,7 +144,8 @@ public class Results extends Activity {
 			public void onClick(DialogInterface dialog, int which) {
 				
 				try {
-					adapter.uploadImageAsync("Description", "Name.png",screenShot(bar), 0, new MessageListener());
+					String Message = "I have ran "+txtDistance.getText()+" km with NGAJ. \nHere are my stats.";
+					adapter.uploadImageAsync(Message, "Name.png",screenShot(Layout1), 0, new MessageListener());
 				} catch (Exception ex) {
 					// TODO Auto-generated catch block
 				Toast.makeText(Results.this, ex.getMessage(),Toast.LENGTH_SHORT).show();

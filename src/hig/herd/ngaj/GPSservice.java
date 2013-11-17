@@ -1,5 +1,10 @@
 package hig.herd.ngaj;
 
+import java.text.DecimalFormat;
+import java.util.Locale;
+import java.util.Timer;
+import java.util.TimerTask;
+
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.Service;
@@ -16,6 +21,7 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
@@ -34,6 +40,15 @@ LocationListener
 	private LocationManager mLocationManager; 
 	private Context mContext;
 	private int NOTIFICATION_ID = 1984;
+    private Timer timer;
+    private int time;
+    private float speed;
+    private float maxspeed=0;
+    private float countSpeed=0;
+    private float totalSpeed=0;
+    private float totaldistance=0;
+    private double lastLat=0;
+    private double lastLng=0;
 	
 	private double max=0;
 	private double min=100;
@@ -48,6 +63,7 @@ LocationListener
 		this.mContext=this.getApplicationContext();
 		declareListeners();
 		startServiceInForeground();
+		startTimer();
 	}
 	protected void declareListeners() {
 		// TODO Auto-generated method stub
@@ -71,6 +87,8 @@ LocationListener
 	{
 		mSensorManager.unregisterListener(this);
 		mLocationManager.removeUpdates(this);
+		timer.cancel();
+		savePreferences();
 		
 	}
 	@Override
@@ -139,21 +157,156 @@ LocationListener
 	@Override
 	public IBinder onBind(Intent intent) {
 		// TODO Auto-generated method stub
+		
+		
 		return null;
 	}
 
-
+	public int onStartCommand(Intent intent, int flags, int startId) {
+		// We want this service to continue running until it is explicitly
+		// stopped, so return sticky.
+		       super.onStart(intent, startId);
+		       int k = intent.getIntExtra("Key", 0);
+				if(k==1)
+				{
+					getPreferences();
+				
+				}
+		       return  startId;
+	}
 	@Override
 	public void onLocationChanged(Location location) {
 		// TODO Auto-generated method stub
 		Log.d("Location Changed: ","Latitude: "+Double.toString(location.getLatitude()));
 		Send.putExtra("Latitude", location.getLatitude());
 		Send.putExtra("Longitude", location.getLongitude());
+		
+		if(lastLat!=0 && lastLng!=0)
+		{
+			totaldistance += Distance(lastLat,lastLng,location.getLatitude(),location.getLongitude());
+		}
+		lastLat=location.getLatitude();
+		lastLng=location.getLongitude();
+		String strDistance = new DecimalFormat("#.##").format(
+                (double) (totaldistance)).toString();
+		Send.putExtra("Distance", strDistance);
+		
+		
+		speed=location.getSpeed();
+		if(speed>maxspeed)
+		{
+			maxspeed=speed;
+		}
+		totalSpeed+=speed;
+		countSpeed++;
+		float avgSpeed = totalSpeed/countSpeed;
+		String strSpeed = new DecimalFormat("#.##").format(
+                (double) (speed)).toString();
+		String strAvgSpeed = new DecimalFormat("#.##").format(
+                (double) (avgSpeed)).toString();
+		String strMaxSpeed = new DecimalFormat("#.##").format(
+                (double) (maxspeed)).toString();
+		String strSpeedExtras = strAvgSpeed+" avg "+strMaxSpeed+" max";
+		Send.putExtra("Speed", strSpeed);
+		Send.putExtra("SpeedExtras", strSpeedExtras);
 		Send.setAction("hig.herd.NGAJ.RECEIVEDATA");
+		
 		LocalBroadcastManager.getInstance(mContext).sendBroadcast(Send);	
 	}
 
+	private void doTime() {
+         //This method is called from timer when activated and it deals with timing, increases the value and shows on UI a proper format of time.
+             
+		 time += 1;
+         
+         String result = "";
+         int hh=time / 3600;
+         int mm=time / 60;
+         int ss=time % 60;
+         if(hh<10)
+         {
+        	 result +="0";
+         }
+         result +=Integer.toString(hh)+":";
+         if(mm<10)
+         {
+        	 result +="0";
+         }
+         result +=Integer.toString(mm)+":";
+         if(ss<10)
+         {
+        	 result +="0";
+         }
+         result +=Integer.toString(ss);
+         if (time > 3600 * 24) {
+                 time = 0;
+         }
+         Send.putExtra("Time", result);
+         LocalBroadcastManager.getInstance(mContext).sendBroadcast(Send);
+ }
 
+	private void startTimer() {
+        //This method starts timer when in record mode this timer calls method dotime every second.
+        timer = new Timer();
+        timer.scheduleAtFixedRate(new TimerTask() {
+
+                public void run() {
+                         doTime();
+                    }
+
+        }, 0, 1000);
+	}
+	private void savePreferences()
+	{
+		PreferenceManager.getDefaultSharedPreferences(mContext).edit().putInt("steps", steps).commit();
+		PreferenceManager.getDefaultSharedPreferences(mContext).edit().putInt("time", time).commit();
+		PreferenceManager.getDefaultSharedPreferences(mContext).edit().putFloat("speed", speed).commit();
+		PreferenceManager.getDefaultSharedPreferences(mContext).edit().putFloat("maxspeed", maxspeed).commit();
+		PreferenceManager.getDefaultSharedPreferences(mContext).edit().putFloat("countSpeed", countSpeed).commit();
+		PreferenceManager.getDefaultSharedPreferences(mContext).edit().putFloat("totalSpeed", totalSpeed).commit();
+		PreferenceManager.getDefaultSharedPreferences(mContext).edit().putFloat("totalDistance", totaldistance).commit();
+		PreferenceManager.getDefaultSharedPreferences(mContext).edit().putFloat("lastLat", (float)lastLat).commit();
+		PreferenceManager.getDefaultSharedPreferences(mContext).edit().putFloat("lastLng", (float)lastLng).commit();
+	}
+	private void getPreferences()
+	{
+		steps=PreferenceManager.getDefaultSharedPreferences(mContext).getInt("steps", 0);
+		time=PreferenceManager.getDefaultSharedPreferences(mContext).getInt("time", 0);
+		speed=PreferenceManager.getDefaultSharedPreferences(mContext).getFloat("speed", 0);
+		maxspeed=PreferenceManager.getDefaultSharedPreferences(mContext).getFloat("maxspeed", 0);
+		countSpeed=PreferenceManager.getDefaultSharedPreferences(mContext).getFloat("countSpeed", 0);
+		totalSpeed=PreferenceManager.getDefaultSharedPreferences(mContext).getFloat("totalSpeed", 0);
+		totaldistance=PreferenceManager.getDefaultSharedPreferences(mContext).getFloat("totalDistance", 0);
+		lastLat=(double)PreferenceManager.getDefaultSharedPreferences(mContext).getFloat("lastLat", 0);
+		lastLng=(double)PreferenceManager.getDefaultSharedPreferences(mContext).getFloat("lastLng", 0);
+	}
+	private float Distance(double nLat1, double nLon1, double nLat2,
+            double nLon2) {
+    /*
+     * Taken From Jaimerios.com it uses Haversine formula to calculate
+     * distance.
+     */
+
+    double nRadius = 6371; // Earth's radius in Kilometers
+    /*
+     * Get the difference between our two points then convert the difference
+     * into radians
+     */
+
+    double nDLat = Math.toRadians(nLat2 - nLat1);
+    double nDLon = Math.toRadians(nLon2 - nLon1);
+
+    // Here is the new line
+    nLat1 = Math.toRadians(nLat1);
+    nLat2 = Math.toRadians(nLat2);
+
+    double nA = Math.pow(Math.sin(nDLat / 2), 2) + Math.cos(nLat1)
+                    * Math.cos(nLat2) * Math.pow(Math.sin(nDLon / 2), 2);
+    double nC = 2 * Math.atan2(Math.sqrt(nA), Math.sqrt(1 - nA));
+    double nD = nRadius * nC;
+
+    return (float) nD; // Return our calculated distance
+}
 	@Override
 	public void onProviderDisabled(String provider) {
 		// TODO Auto-generated method stub
@@ -183,7 +336,7 @@ LocationListener
          // 2. setup the notification (in the notification bar up on the top of the screen)
          final Notification note = new NotificationCompat.Builder(this)
          .setContentTitle("NGAJ")
-         .setContentText("Updating ... ")
+         .setContentText("Tracking Location and Counting Steps.")
          //.setSmallIcon(android.R.drawable.arrow_down_float)
          .setLargeIcon(img1)
          .setSmallIcon(R.drawable.ic_launcher)

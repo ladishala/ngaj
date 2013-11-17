@@ -51,6 +51,10 @@
             android:name="hig.herd.ngaj.Results"
             android:label="@string/title_activity_results" >
         </activity>
+        <activity
+            android:name="hig.herd.ngaj.Stats"
+            android:label="@string/title_activity_stats" >
+        </activity>
     </application>
 
 </manifest>

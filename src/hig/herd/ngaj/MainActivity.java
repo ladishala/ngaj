@@ -1,5 +1,6 @@
 package hig.herd.ngaj;
 
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -43,7 +44,7 @@ import android.widget.Toast;
 public class MainActivity extends Activity {
 
 	/**
-	 * Declare GUI comonents
+	 * Declare GUI components
 	 * and the map components
 	 */
 
@@ -51,6 +52,7 @@ public class MainActivity extends Activity {
 	TextView txtSteps;
 	TextView txtTime;
 	TextView txtSpeed;
+	TextView txtSpeedExtras;
 	TextView txtDistance;
 	PathOverlay myPath;
 	MyLocationOverlay myLocation;
@@ -58,11 +60,13 @@ public class MainActivity extends Activity {
 	MapController mapController;
 	Intent serviceIntent;
 	Button btnStart;
+	Boolean OrientationChange=false;
 	
 	/*
 	 * Key For knowing app state
 	 * 0 - Not Recording
 	 * 1 - Recording
+	 * 2 - Destroyed while recording
 	 */
 	int k=0;
 
@@ -73,10 +77,12 @@ public class MainActivity extends Activity {
 		setContentView(R.layout.activity_main);
 		
 		txtSteps = (TextView)findViewById(R.id.steps2);	
-		txtSpeed = (TextView)findViewById(R.id.speed2);	
+		txtSpeed = (TextView)findViewById(R.id.speed2);
+		txtSpeedExtras=(TextView)findViewById(R.id.speed3);
 		txtTime = (TextView)findViewById(R.id.time2);	
 		txtDistance = (TextView)findViewById(R.id.distance2);	
 		btnStart=(Button)findViewById(R.id.btnStart);
+		serviceIntent = new Intent(this,GPSservice.class);
 		
 		/**
 		 * Get the MapView widget, set the zoom controllers 
@@ -95,9 +101,7 @@ public class MainActivity extends Activity {
          */
         myLocation = new MyLocationOverlay(this,mapView);
         myPath=new PathOverlay(Color.RED, this);
-        
-
-	}
+     }
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -105,7 +109,101 @@ public class MainActivity extends Activity {
 		getMenuInflater().inflate(R.menu.main, menu);
 		return true;
 	}
+	public void onPause()
+	{
+		super.onPause();
+		myLocation.disableMyLocation();
+		savePreferences();
+		
+	}
+	public void onDestroy()
+	{
+		super.onPause();
+		stopService(serviceIntent);
+		myLocation.disableMyLocation();
+		if(k==1)
+		{
+		k=2;
+		}
+		savePreferences();
+	}
+	public void onResume()
+	{
+		super.onResume();
+		getPreferences();
+		
+		if(k==1 || OrientationChange)
+		{
+			btnStart.setText("Pause");
+			myLocation.enableMyLocation();
+			myLocation.enableFollowLocation();
+			myLocation.setDrawAccuracyEnabled(false);
+	        mapView.getOverlays().add(myLocation);
+	        IntentFilter intentFilter = new IntentFilter("hig.herd.NGAJ.RECEIVEDATA");
+	        LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(this.ReceiveData ,intentFilter);   
+	        OrientationChange=false;
+		}
+		else if(k==2)
+		{
+			showResumeAlert();
+			btnStart.setText("Pause");
+		}
+		else
+		{
+			btnStart.setText("Start");
+			txtTime.setText("00:00:00");
+			txtSpeed.setText("0.00");
+			txtDistance.setText("0.00");
+			txtSteps.setText("0");
+			txtSpeedExtras.setText("0 avg 0 max");
+		}
+	
+	}
    
+	private void showResumeAlert()
+	{
+		Alert = new AlertDialog.Builder(this);
+		Alert.setTitle("Continue Work!");
+		Alert.setMessage("Do you want to continue your previous workout?");
+		Alert.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+			
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				
+				try {
+					serviceIntent.putExtra("Key", 1);
+					k=1;
+					startService(serviceIntent);
+					IntentFilter intentFilter = new IntentFilter("hig.herd.NGAJ.RECEIVEDATA");
+			        LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(ReceiveData ,intentFilter); 
+					myLocation.enableMyLocation();
+			        myLocation.enableFollowLocation();
+			        myLocation.setDrawAccuracyEnabled(false);
+			        mapView.getOverlays().add(myLocation);
+					 
+				} catch (Exception ex) {
+					// TODO Auto-generated catch block
+				;
+				}
+				
+			}
+		});
+		Alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+			
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+			k=0;	
+			btnStart.setText("Start");
+			txtTime.setText("00:00:00");
+			txtSpeed.setText("0.00");
+			txtDistance.setText("0.00");
+			txtSteps.setText("0");
+			txtSpeedExtras.setText("0 avg 0 max");	
+			}
+		});
+		Alert.show();
+				
+	}
 	
 	public void startRecording(View v)
 	{ 
@@ -123,7 +221,7 @@ public class MainActivity extends Activity {
         LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(this.ReceiveData ,intentFilter);      
         
         //Start Service with Intent
-        serviceIntent = new Intent(this,GPSservice.class);
+        serviceIntent.putExtra("Key", 5);
         startService(serviceIntent);
         
         //Change button text
@@ -138,13 +236,89 @@ public class MainActivity extends Activity {
 		}
 		else if(k==1)
 		{
+			/*serviceIntent.putExtra("Key", 5);
 			stopService(serviceIntent);
 			myLocation.disableMyLocation();
-			btnStart.setText("Start");
-			k=0;
+			btnStart.setText("Start");*/
+			myLocation.disableMyLocation();
+			stopService(serviceIntent);
+			showPauseAlert();
+			
 		}
 		
 	}
+	
+	public Object onRetainNonConfigurationInstance()
+	{
+		OrientationChange=true;
+		return OrientationChange;
+	}
+	
+	private void startResults()
+	{
+		k=0;
+		savePreferences();
+		Intent i = new Intent(MainActivity.this,Results.class);
+		i.putExtra("Time", txtTime.getText());
+		i.putExtra("Speed",txtSpeed.getText());
+		i.putExtra("Steps", txtSteps.getText());
+		i.putExtra("SpeedExtras", txtSpeedExtras.getText());
+		i.putExtra("Distance", txtDistance.getText());
+		startActivity(i);
+	}
+	
+	private void showPauseAlert()
+	{
+		Alert = new AlertDialog.Builder(this);
+		Alert.setTitle("Workout Paused!");
+		Alert.setMessage("What you want to do?");
+		Alert.setPositiveButton("Save", new DialogInterface.OnClickListener() {
+			
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				
+				try {
+					startResults();
+										 
+				} catch (Exception ex) {
+					// TODO Auto-generated catch block
+				;
+				}
+				
+			}
+		});
+		Alert.setNegativeButton("Resume", new DialogInterface.OnClickListener() {
+			
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+			k=1;
+			serviceIntent.putExtra("Key", 1);
+			startService(serviceIntent);
+			myLocation.enableMyLocation();
+	        myLocation.enableFollowLocation();
+	        myLocation.setDrawAccuracyEnabled(false);
+	        mapView.getOverlays().add(myLocation);
+			}
+		});
+		Alert.setNeutralButton("Discard", new DialogInterface.OnClickListener() {
+			
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+			k=0;	
+			btnStart.setText("Start");
+			txtTime.setText("00:00:00");
+			txtSpeed.setText("0.00");
+			txtDistance.setText("0.00");
+			txtSteps.setText("0");
+			txtSpeedExtras.setText("0 avg 0 max");
+			
+			}
+		});
+		Alert.show();
+				
+	}
+	
+	
 	/**
 	 * Draws a point into the map using the coordinates given as parameters.
 	 * This is done if the Latitude and Longitude are not 0, since this is the default value.
@@ -155,11 +329,34 @@ public class MainActivity extends Activity {
 		if(Latitude!=0 && Longitude!=0)
 			
 			myPath.addPoint(Point);
+			
 			mapView.getOverlays().add(myPath);
 			mapController.setCenter(Point);
 			mapController.setZoom(17);
 	}
 	
+	private void savePreferences()
+	{
+		getPreferences(MODE_PRIVATE).edit().putInt("Key",k).commit();
+		getPreferences(MODE_PRIVATE).edit().putBoolean("OrientationChange", OrientationChange);
+		
+	}
+	private void getPreferences()
+	{
+		k=getPreferences(MODE_PRIVATE).getInt("Key",0);
+		OrientationChange=getPreferences(MODE_PRIVATE).getBoolean("OrientationChange", false);
+	}
+	
+	public void cameraClick(View v)
+	{
+		Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+		startActivityForResult(cameraIntent, 1337);
+	}
+	public void statsClick(View v)
+	{
+		Intent i = new Intent(MainActivity.this,Stats.class);
+		startActivity(i);
+	}
 	/**
 	 * Declaring and implementing a Broadcast Receivers. It will receive data form and save them
 	 * in Steps, Latitude and Longitude variables. Also it calls the addPoint function which draws a point on map. 
@@ -175,12 +372,14 @@ public class MainActivity extends Activity {
 			final double Longitude = intent.getDoubleExtra("Longitude", 0);
 			final String Time = intent.getStringExtra("Time");
 			final String Distance = intent.getStringExtra("Distance");
-			final String Speed = intent.getStringExtra("Time");
+			final String Speed = intent.getStringExtra("Speed");
+			final String SpeedExtras = intent.getStringExtra("SpeedExtras");
 			addPoint(Latitude,Longitude);
 			txtSteps.setText(Integer.toString(Steps));
 			txtTime.setText(Time);
 			txtDistance.setText(Distance);
 			txtSpeed.setText(Speed);
+			txtSpeedExtras.setText(SpeedExtras);
 			Log.d("BroadCast Recieveri","I Got The message From Service: "+Integer.toString(Steps)+" Latitude: "+Double.toString(Latitude)+" Longitude: "+Double.toString(Longitude));
 		}
 	}; 
