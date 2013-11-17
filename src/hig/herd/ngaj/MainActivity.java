@@ -12,6 +12,7 @@ import org.brickred.socialauth.android.SocialAuthListener;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapController;
 import org.osmdroid.views.MapView;
+import org.osmdroid.views.overlay.MyLocationOverlay;
 import org.osmdroid.views.overlay.PathOverlay;
 
 
@@ -48,7 +49,11 @@ public class MainActivity extends Activity {
 
 	AlertDialog.Builder Alert;
 	TextView txtSteps;
+	TextView txtTime;
+	TextView txtSpeed;
+	TextView txtDistance;
 	PathOverlay myPath;
+	MyLocationOverlay myLocation;
 	MapView mapView;
 	MapController mapController;
 	Intent serviceIntent;
@@ -67,20 +72,29 @@ public class MainActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		
-
-		myPath=new PathOverlay(Color.RED, this);	
 		txtSteps = (TextView)findViewById(R.id.steps2);	
+		txtSpeed = (TextView)findViewById(R.id.speed2);	
+		txtTime = (TextView)findViewById(R.id.time2);	
+		txtDistance = (TextView)findViewById(R.id.distance2);	
 		btnStart=(Button)findViewById(R.id.btnStart);
 		
 		/**
 		 * Get the MapView widget, set the zoom controllers 
 		 * and set the initial zoom level of the map
+		 * 
+		 * 
 		 */
 		mapView = (MapView) findViewById(R.id.mapview);
         mapView.setBuiltInZoomControls(true);
         mapController = mapView.getController();
-        mapController.setZoom(5);
-
+        mapController.setZoom(16);
+        
+        /**
+         * Declare myLocationOverlay to show current location pointer on map 
+         * also declared path overlay which is used later do draw track
+         */
+        myLocation = new MyLocationOverlay(this,mapView);
+        myPath=new PathOverlay(Color.RED, this);
         
 
 	}
@@ -115,10 +129,17 @@ public class MainActivity extends Activity {
         //Change button text
         btnStart.setText("Pause");
         k=1;
+        
+        
+        myLocation.enableMyLocation();
+        myLocation.enableFollowLocation();
+        myLocation.setDrawAccuracyEnabled(false);
+        mapView.getOverlays().add(myLocation);
 		}
 		else if(k==1)
 		{
 			stopService(serviceIntent);
+			myLocation.disableMyLocation();
 			btnStart.setText("Start");
 			k=0;
 		}
@@ -152,8 +173,14 @@ public class MainActivity extends Activity {
 			final int Steps=intent.getIntExtra("Steps",0);
 			final double Latitude = intent.getDoubleExtra("Latitude", 0);
 			final double Longitude = intent.getDoubleExtra("Longitude", 0);
+			final String Time = intent.getStringExtra("Time");
+			final String Distance = intent.getStringExtra("Distance");
+			final String Speed = intent.getStringExtra("Time");
 			addPoint(Latitude,Longitude);
 			txtSteps.setText(Integer.toString(Steps));
+			txtTime.setText(Time);
+			txtDistance.setText(Distance);
+			txtSpeed.setText(Speed);
 			Log.d("BroadCast Recieveri","I Got The message From Service: "+Integer.toString(Steps)+" Latitude: "+Double.toString(Latitude)+" Longitude: "+Double.toString(Longitude));
 		}
 	}; 

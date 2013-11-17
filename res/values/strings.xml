@@ -16,7 +16,7 @@
     <string name="startSpeed">00.0</string>
     <string name="speedFormat">0.00 avg 0.00 max</string>
     <string name="steps">Steps:</string>
-    <string name="startSteps">000000</string>
+    <string name="startSteps">0</string>
     <string name="Start">Start</string>
     <string name="Camera">Camera</string>
     <string name="ViewStats">Stats</string>

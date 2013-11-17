@@ -1,9 +1,12 @@
 package hig.herd.ngaj;
 
-import android.app.IntentService;
+import android.app.Notification;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -13,6 +16,7 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
@@ -29,6 +33,7 @@ LocationListener
 	private int steps=0;
 	private LocationManager mLocationManager; 
 	private Context mContext;
+	private int NOTIFICATION_ID = 1984;
 	
 	private double max=0;
 	private double min=100;
@@ -42,7 +47,7 @@ LocationListener
 		getApplicationContext();
 		this.mContext=this.getApplicationContext();
 		declareListeners();
-		
+		startServiceInForeground();
 	}
 	protected void declareListeners() {
 		// TODO Auto-generated method stub
@@ -168,4 +173,25 @@ LocationListener
 		// TODO Auto-generated method stub
 		
 	}
+	 private void startServiceInForeground() {
+         Bitmap img1=BitmapFactory.decodeResource(getResources(), R.drawable.ic_launcher);
+         	// What we do here is:
+         	// 1. setup what Intent should be invoked when we select a notification
+         final Intent i = new Intent(this, MainActivity.class);
+         i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+         PendingIntent pi = PendingIntent.getActivity(this, 0, i, 0);
+         // 2. setup the notification (in the notification bar up on the top of the screen)
+         final Notification note = new NotificationCompat.Builder(this)
+         .setContentTitle("NGAJ")
+         .setContentText("Updating ... ")
+         //.setSmallIcon(android.R.drawable.arrow_down_float)
+         .setLargeIcon(img1)
+         .setSmallIcon(R.drawable.ic_launcher)
+         .setContentIntent(pi)
+         .build();
+         note.icon=R.drawable.ic_launcher;
+         note.flags |= Notification.FLAG_NO_CLEAR; // the notification cannot be cleared
+         // 3. run our service in the foreground, with the notification attached
+         startForeground(NOTIFICATION_ID, note);
+	 }
 }
