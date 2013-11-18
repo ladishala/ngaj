@@ -1,7 +1,6 @@
 package hig.herd.ngaj;
 
 import java.text.DecimalFormat;
-import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -50,8 +49,8 @@ LocationListener
     private double lastLat=0;
     private double lastLng=0;
 	
-	private double max=0;
-	private double min=100;
+	//private double max=0;
+	//private double min=100;
 	Intent Send;
 	public GPSservice() {
 		super();

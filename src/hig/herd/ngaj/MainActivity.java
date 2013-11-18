@@ -1,15 +1,6 @@
 package hig.herd.ngaj;
 
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-
-import org.brickred.socialauth.android.DialogListener;
-import org.brickred.socialauth.android.SocialAuthAdapter;
-import org.brickred.socialauth.android.SocialAuthAdapter.Provider;
-import org.brickred.socialauth.android.SocialAuthError;
-import org.brickred.socialauth.android.SocialAuthListener;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapController;
 import org.osmdroid.views.MapView;
@@ -24,22 +15,14 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.graphics.Bitmap.Config;
-import android.graphics.Canvas;
-import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
-import android.provider.MediaStore.Images;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
-import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 public class MainActivity extends Activity {
 
@@ -236,14 +219,10 @@ public class MainActivity extends Activity {
 		}
 		else if(k==1)
 		{
-			/*serviceIntent.putExtra("Key", 5);
-			stopService(serviceIntent);
-			myLocation.disableMyLocation();
-			btnStart.setText("Start");*/
+			k=2;
 			myLocation.disableMyLocation();
 			stopService(serviceIntent);
-			showPauseAlert();
-			
+			showPauseAlert();	
 		}
 		
 	}
