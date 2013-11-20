@@ -43,8 +43,7 @@ LocationListener
     private int time;
     private float speed;
     private float maxspeed=0;
-    private float countSpeed=0;
-    private float totalSpeed=0;
+    float avgSpeed=0;
     private float totaldistance=0;
     private double lastLat=0;
     private double lastLng=0;
@@ -124,7 +123,7 @@ LocationListener
 	}
 	private void checkforstep()
 	{
-		if(magnitude>12)
+		if(magnitude>8)
 		{
 			if(up && down)
 			{
@@ -139,7 +138,7 @@ LocationListener
 			down=false;
 			}
 		}
-		else if(magnitude<1)
+		else if(magnitude<2)
 		{
 			down=true;
 		}
@@ -161,6 +160,7 @@ LocationListener
 		return null;
 	}
 
+	@SuppressWarnings("deprecation")
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		// We want this service to continue running until it is explicitly
 		// stopped, so return sticky.
@@ -182,7 +182,7 @@ LocationListener
 		
 		if(lastLat!=0 && lastLng!=0)
 		{
-			totaldistance += Distance(lastLat,lastLng,location.getLatitude(),location.getLongitude());
+			totaldistance += Distance(lastLat,lastLng,location.getLatitude(),location.getLongitude())/1000.00;
 		}
 		lastLat=location.getLatitude();
 		lastLng=location.getLongitude();
@@ -196,9 +196,8 @@ LocationListener
 		{
 			maxspeed=speed;
 		}
-		totalSpeed+=speed;
-		countSpeed++;
-		float avgSpeed = totalSpeed/countSpeed;
+		
+		avgSpeed = totaldistance/Float.parseFloat(Integer.toString(time));
 		String strSpeed = new DecimalFormat("#.##").format(
                 (double) (speed)).toString();
 		String strAvgSpeed = new DecimalFormat("#.##").format(
@@ -261,8 +260,6 @@ LocationListener
 		PreferenceManager.getDefaultSharedPreferences(mContext).edit().putInt("time", time).commit();
 		PreferenceManager.getDefaultSharedPreferences(mContext).edit().putFloat("speed", speed).commit();
 		PreferenceManager.getDefaultSharedPreferences(mContext).edit().putFloat("maxspeed", maxspeed).commit();
-		PreferenceManager.getDefaultSharedPreferences(mContext).edit().putFloat("countSpeed", countSpeed).commit();
-		PreferenceManager.getDefaultSharedPreferences(mContext).edit().putFloat("totalSpeed", totalSpeed).commit();
 		PreferenceManager.getDefaultSharedPreferences(mContext).edit().putFloat("totalDistance", totaldistance).commit();
 		PreferenceManager.getDefaultSharedPreferences(mContext).edit().putFloat("lastLat", (float)lastLat).commit();
 		PreferenceManager.getDefaultSharedPreferences(mContext).edit().putFloat("lastLng", (float)lastLng).commit();
@@ -273,8 +270,6 @@ LocationListener
 		time=PreferenceManager.getDefaultSharedPreferences(mContext).getInt("time", 0);
 		speed=PreferenceManager.getDefaultSharedPreferences(mContext).getFloat("speed", 0);
 		maxspeed=PreferenceManager.getDefaultSharedPreferences(mContext).getFloat("maxspeed", 0);
-		countSpeed=PreferenceManager.getDefaultSharedPreferences(mContext).getFloat("countSpeed", 0);
-		totalSpeed=PreferenceManager.getDefaultSharedPreferences(mContext).getFloat("totalSpeed", 0);
 		totaldistance=PreferenceManager.getDefaultSharedPreferences(mContext).getFloat("totalDistance", 0);
 		lastLat=(double)PreferenceManager.getDefaultSharedPreferences(mContext).getFloat("lastLat", 0);
 		lastLng=(double)PreferenceManager.getDefaultSharedPreferences(mContext).getFloat("lastLng", 0);
@@ -326,7 +321,7 @@ LocationListener
 		
 	}
 	 private void startServiceInForeground() {
-         Bitmap img1=BitmapFactory.decodeResource(getResources(), R.drawable.ic_launcher);
+         Bitmap img1=BitmapFactory.decodeResource(getResources(), R.drawable.runn);
          	// What we do here is:
          	// 1. setup what Intent should be invoked when we select a notification
          final Intent i = new Intent(this, MainActivity.class);
@@ -338,10 +333,10 @@ LocationListener
          .setContentText("Tracking Location and Counting Steps.")
          //.setSmallIcon(android.R.drawable.arrow_down_float)
          .setLargeIcon(img1)
-         .setSmallIcon(R.drawable.ic_launcher)
+         .setSmallIcon(R.drawable.runn)
          .setContentIntent(pi)
          .build();
-         note.icon=R.drawable.ic_launcher;
+         note.icon=R.drawable.runn;
          note.flags |= Notification.FLAG_NO_CLEAR; // the notification cannot be cleared
          // 3. run our service in the foreground, with the notification attached
          startForeground(NOTIFICATION_ID, note);

@@ -181,7 +181,8 @@ public class MainActivity extends Activity {
 			txtSpeed.setText("0.00");
 			txtDistance.setText("0.00");
 			txtSteps.setText("0");
-			txtSpeedExtras.setText("0 avg 0 max");	
+			txtSpeedExtras.setText("0 avg 0 max");
+			myPath.clearPath();
 			}
 		});
 		Alert.show();
@@ -290,7 +291,7 @@ public class MainActivity extends Activity {
 			txtDistance.setText("0.00");
 			txtSteps.setText("0");
 			txtSpeedExtras.setText("0 avg 0 max");
-			
+			myPath.clearPath();
 			}
 		});
 		Alert.show();
@@ -308,7 +309,6 @@ public class MainActivity extends Activity {
 		if(Latitude!=0 && Longitude!=0)
 			
 			myPath.addPoint(Point);
-			
 			mapView.getOverlays().add(myPath);
 			mapController.setCenter(Point);
 			mapController.setZoom(17);
