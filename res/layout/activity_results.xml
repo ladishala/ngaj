@@ -179,7 +179,8 @@
         android:layout_alignLeft="@+id/Layout2"
         android:layout_alignParentBottom="true"
         android:layout_alignRight="@+id/Layout2"
-        android:orientation="horizontal" >
+        android:orientation="horizontal"
+        android:gravity="center" >
 
     </LinearLayout>
   

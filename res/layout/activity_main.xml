@@ -6,8 +6,8 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    android:background="#00AABB"
-    tools:context=".MainActivity" >
+    tools:context=".MainActivity"
+    android:background="@drawable/background" >
 
     <org.osmdroid.views.MapView
         android:id="@+id/mapview"
@@ -28,7 +28,8 @@
         android:layout_alignParentBottom="true"
         android:layout_alignRight="@+id/btnCamera"
         android:text="@string/Start"
-        android:onClick="startRecording" />
+        android:onClick="startRecording"
+        android:textColor="#FFFFFF" />
 
     <Button
         android:id="@+id/btnTracks"
@@ -36,7 +37,9 @@
         android:layout_height="wrap_content"
         android:layout_above="@+id/btnStart"
         android:layout_alignLeft="@+id/btnStart"
-        android:text="@string/ViewTracks" />
+        android:text="@string/ViewTracks"
+        android:onClick="viewTracks"
+        android:textColor="#FFFFFF"  />
 
     <LinearLayout
         android:id="@+id/statisticsr2"
@@ -190,7 +193,8 @@
         android:layout_toLeftOf="@+id/btnCamera"
         android:layout_toRightOf="@+id/btnTracks"
         android:text="@string/ViewStats"
-        android:onClick="statsClick" />
+        android:onClick="statsClick"
+        android:textColor="#FFFFFF"  />
 
     <Button
         android:id="@+id/btnCamera"
@@ -199,6 +203,7 @@
         android:layout_alignRight="@+id/mapview"
         android:layout_below="@+id/statisticsr2"
         android:text="@string/Camera"
-        android:onClick="cameraClick" />
+        android:onClick="cameraClick"
+        android:textColor="#FFFFFF"  />
 
 </RelativeLayout>

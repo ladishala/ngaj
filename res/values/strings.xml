@@ -23,5 +23,6 @@
     <string name="ViewTracks">Tracks</string>
     <string name="Text">Well Done! You have finished this session.</string>
     <string name="title_activity_stats">Stats</string>
+    <string name="title_activity_tracks">Tracks</string>
 
 </resources>

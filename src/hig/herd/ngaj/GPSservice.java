@@ -78,6 +78,8 @@ LocationListener
 		
 		Send = new Intent();
 		Send.putExtra("Steps", 0);
+		Send.putExtra("Speed", "0");
+		Send.putExtra("Distance", "0.00");
 		Send.setAction("hig.herd.NGAJ.RECEIVEDATA");
 		LocalBroadcastManager.getInstance(mContext).sendBroadcast(Send);
 	}
@@ -182,7 +184,7 @@ LocationListener
 		
 		if(lastLat!=0 && lastLng!=0)
 		{
-			totaldistance += Distance(lastLat,lastLng,location.getLatitude(),location.getLongitude())/1000.00;
+			totaldistance += Distance(lastLat,lastLng,location.getLatitude(),location.getLongitude());
 		}
 		lastLat=location.getLatitude();
 		lastLng=location.getLongitude();

@@ -7,7 +7,6 @@ import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.MyLocationOverlay;
 import org.osmdroid.views.overlay.PathOverlay;
 
-
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
@@ -22,6 +21,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 
 public class MainActivity extends Activity {
@@ -58,7 +58,6 @@ public class MainActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-		
 		txtSteps = (TextView)findViewById(R.id.steps2);	
 		txtSpeed = (TextView)findViewById(R.id.speed2);
 		txtSpeedExtras=(TextView)findViewById(R.id.speed3);
@@ -234,17 +233,23 @@ public class MainActivity extends Activity {
 		return OrientationChange;
 	}
 	
-	private void startResults()
+	private void startResults(String Name)
 	{
 		k=0;
 		savePreferences();
 		Intent i = new Intent(MainActivity.this,Results.class);
-		i.putExtra("Time", txtTime.getText());
-		i.putExtra("Speed",txtSpeed.getText());
-		i.putExtra("Steps", txtSteps.getText());
-		i.putExtra("SpeedExtras", txtSpeedExtras.getText());
-		i.putExtra("Distance", txtDistance.getText());
-		startActivity(i);
+		Intent s = new Intent(MainActivity.this,DBservice.class);
+		Bundle extras = new Bundle();
+		extras.putString("Name", Name);
+		extras.putString("Time", (String) txtTime.getText());
+		extras.putString("Speed",(String) txtSpeed.getText());
+		extras.putString("Steps", (String) txtSteps.getText());
+		extras.putString("SpeedExtras", (String) txtSpeedExtras.getText());
+		extras.putString("Distance", (String) txtDistance.getText());
+		i.putExtras(extras);
+		s.putExtras(extras);
+		startService(s);				
+		startActivity(i);	
 	}
 	
 	private void showPauseAlert()
@@ -258,8 +263,8 @@ public class MainActivity extends Activity {
 			public void onClick(DialogInterface dialog, int which) {
 				
 				try {
-					startResults();
-										 
+					showNameTrackAlert();
+															 
 				} catch (Exception ex) {
 					// TODO Auto-generated catch block
 				;
@@ -299,6 +304,45 @@ public class MainActivity extends Activity {
 	}
 	
 	
+	private void showNameTrackAlert()
+	{
+		Alert = new AlertDialog.Builder(this);
+		Alert.setTitle("Name Track");
+		Alert.setMessage("Give a name to your track.");
+		// Set an EditText view to get user input 
+		final EditText input = new EditText(this);
+		input.setSingleLine(true);
+	
+		Alert.setView(input);
+		Alert.setPositiveButton("Save", new DialogInterface.OnClickListener() {
+			
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				
+				try {
+					
+					startResults(input.getText().toString());
+					
+					 
+				} catch (Exception ex) {
+					// TODO Auto-generated catch block
+				;
+				}
+				
+			}
+		});
+		Alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+			
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+			showPauseAlert();
+			}
+		});
+		Alert.show();
+		
+	}
+	
+	
 	/**
 	 * Draws a point into the map using the coordinates given as parameters.
 	 * This is done if the Latitude and Longitude are not 0, since this is the default value.
@@ -329,11 +373,16 @@ public class MainActivity extends Activity {
 	public void cameraClick(View v)
 	{
 		Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
-		startActivityForResult(cameraIntent, 1337);
+		startActivity(cameraIntent);
 	}
 	public void statsClick(View v)
 	{
 		Intent i = new Intent(MainActivity.this,Stats.class);
+		startActivity(i);
+	}
+	public void viewTracks(View v)
+	{
+		Intent i = new Intent(MainActivity.this,Tracks.class);
 		startActivity(i);
 	}
 	/**

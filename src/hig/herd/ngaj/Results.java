@@ -66,11 +66,13 @@ public class Results extends Activity {
 		txtSpeedExtras=(TextView)findViewById(R.id.rspeed3);
 		txtTime = (TextView)findViewById(R.id.rtime2);	
 		txtDistance = (TextView)findViewById(R.id.rdistance2);
+		
 		String strSteps=i.getStringExtra("Steps");
 		String strSpeed=i.getStringExtra("Speed");
 		String strSpeedExtras=i.getStringExtra("SpeedExtras");
 		String strTime=i.getStringExtra("Time");
 		String strDistance=i.getStringExtra("Distance");
+		
 		txtSteps.setText(strSteps);
 		txtSpeed.setText(strSpeed);
 		txtSpeedExtras.setText(strSpeedExtras);
@@ -88,7 +90,8 @@ public class Results extends Activity {
 		// Add providers
 		adapter.addProvider(Provider.FACEBOOK, R.drawable.facebook);
 		adapter.addProvider(Provider.TWITTER, R.drawable.twitter);
-		adapter.addProvider(Provider.EMAIL, R.drawable.other);
+		adapter.addProvider(Provider.MMS, R.drawable.other);
+		adapter.addProvider(Provider.EMAIL, R.drawable.camera);
 		adapter.enable(bar);
 		
 
@@ -204,12 +207,18 @@ public class Results extends Activity {
 	private final class ResponseListener implements DialogListener {
 		public void onComplete(Bundle values) {
 
+
 			// Get name of provider after authentication
 			final String providerName = values
 					.getString(SocialAuthAdapter.PROVIDER);
 			if(providerName=="facebook"||providerName=="twitter")
 			{	
 				showalert(providerName);
+			}
+			else if(providerName=="share_mail")
+			{
+				Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+				startActivity(cameraIntent);
 			}
 			else
 			{
