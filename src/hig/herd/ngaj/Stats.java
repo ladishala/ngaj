@@ -1,6 +1,7 @@
 package hig.herd.ngaj;
 
 
+import java.text.DecimalFormat;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.TimeZone;
@@ -65,7 +66,7 @@ public class Stats extends Activity {
 			{
 			TotalDistance = (double)cr1.getFloat(cr1.getColumnIndex("TotalDistance"));
 			}
-			values1[i]=TotalDistance;
+			values1[i]= Double.parseDouble(new DecimalFormat("#.#").format(TotalDistance)); 
 		
 			double TotalSteps=0;
 			cr1= db.rawQuery("Select SUM(Steps) From tblTracks Where Date='"+year+"-"+month+"-"+date+"'",null);
@@ -73,9 +74,9 @@ public class Stats extends Activity {
 			{
 			TotalSteps = cr1.getInt(0);
 			}
-			values2[i]=TotalSteps;
+			values2[i]=Double.parseDouble(new DecimalFormat("#.#").format(TotalSteps)); 
 			
-			ValuesX[i]=date+"\n"+month;
+			ValuesX[i]=date+"-"+month;
 			decreaseDate();
 			
 			
@@ -142,11 +143,11 @@ public class Stats extends Activity {
 			graphView.addSeries(exampleSeries); // data  
 			graphView.setHorizontalLabels(ValuesX);
 		    Arrays.sort(values);
-			double min=values[0];
-			double max=values[6];
-			double middle=(max+min)/2;
-			double m1=(middle+max)/2;
-			double m2=(middle+min)/2;
+			double min=Double.parseDouble(new DecimalFormat("#.#").format(values[0])); 
+			double max=Double.parseDouble(new DecimalFormat("#.#").format(values[6]));
+			double middle=Double.parseDouble(new DecimalFormat("#.#").format((max+min)/2));
+			double m1=Double.parseDouble(new DecimalFormat("#.#").format((middle+max)/2));
+			double m2=Double.parseDouble(new DecimalFormat("#.#").format((middle+min)/2));
 			String a []={String.valueOf(max),String.valueOf(m1),String.valueOf(middle),String.valueOf(m2),String.valueOf(min)};
 			graphView.setVerticalLabels(a);
 			layout.addView(graphView); 

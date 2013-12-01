@@ -75,7 +75,6 @@ LocationListener
 		
 		
 		mLocationManager = (LocationManager)mContext.getSystemService(LOCATION_SERVICE);
-		mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 5000, 10, this);
 		mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,5000,10,this);
 		
 		

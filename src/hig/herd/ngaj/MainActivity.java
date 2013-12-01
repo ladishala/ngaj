@@ -73,11 +73,6 @@ public class MainActivity extends FragmentActivity {
 		 * 
 		 */
 		mapView = ((SupportMapFragment)getSupportFragmentManager().findFragmentById(R.id.mapview)).getMap();
-		mapView.setMyLocationEnabled(true);
-		//mapView.setMyLocationEnabled(true);
-        /*mapView.setBuiltInZoomControls(true);
-        mapController = mapView.getController();
-        mapController.setZoom(16);*/
         
         /**
          * Declare myLocationOverlay to show current location pointer on map 
@@ -96,15 +91,14 @@ public class MainActivity extends FragmentActivity {
 	public void onPause()
 	{
 		super.onPause();
-		//myLocation.disableMyLocation();
 		savePreferences();
-		
+		mapView.setMyLocationEnabled(false);
 	}
 	public void onDestroy()
 	{
-		super.onPause();
+		super.onDestroy();
 		stopService(serviceIntent);
-		//myLocation.disableMyLocation();
+		mapView.setMyLocationEnabled(false);
 		if(k==1)
 		{
 		k=2;
@@ -119,15 +113,12 @@ public class MainActivity extends FragmentActivity {
 		if(k==1 || (k==2 && OrientationChange))
 		{
 			btnStart.setText("Pause");
-			//myLocation.enableMyLocation();
-			//myLocation.enableFollowLocation();
-			//myLocation.setDrawAccuracyEnabled(false);
-	        //mapView.getOverlays().add(myLocation);
+			mapView.setMyLocationEnabled(true);
 	        IntentFilter intentFilter = new IntentFilter("hig.herd.NGAJ.RECEIVEDATA");
 	        LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(this.ReceiveData ,intentFilter);   
 	        OrientationChange=false;
 	        k=1;
-	        serviceIntent.putExtra("Key", k);
+	        serviceIntent.putExtra("Key", 5);
 	        startService(serviceIntent);
 	        
 		}
@@ -164,10 +155,7 @@ public class MainActivity extends FragmentActivity {
 					startService(serviceIntent);
 					IntentFilter intentFilter = new IntentFilter("hig.herd.NGAJ.RECEIVEDATA");
 			        LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(ReceiveData ,intentFilter); 
-					//myLocation.enableMyLocation();
-			        //myLocation.enableFollowLocation();
-			        //myLocation.setDrawAccuracyEnabled(false);
-			        //mapView.getOverlays().add(myLocation);
+					mapView.setMyLocationEnabled(true);
 					 
 				} catch (Exception ex) {
 					// TODO Auto-generated catch block
@@ -258,12 +246,13 @@ public class MainActivity extends FragmentActivity {
         
         latLngList.clear();
         mapView.clear();
-        
+        mapView.setMyLocationEnabled(true);
 		}
 		else if(k==1)
 		{
 			k=2;
 			stopService(serviceIntent);
+			mapView.setMyLocationEnabled(false);
 			showPauseAlert();	
 		}
 		
@@ -329,6 +318,7 @@ public class MainActivity extends FragmentActivity {
 			k=1;
 			serviceIntent.putExtra("Key", 1);
 			startService(serviceIntent);
+			mapView.setMyLocationEnabled(true);
 			}
 		});
 		Alert.setNeutralButton("Discard", new DialogInterface.OnClickListener() {
