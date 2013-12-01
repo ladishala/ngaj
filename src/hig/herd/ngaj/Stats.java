@@ -1,8 +1,14 @@
 package hig.herd.ngaj;
 
+
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.TimeZone;
+
 
 import android.app.Activity;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.view.Menu;
 import android.widget.LinearLayout;
@@ -14,24 +20,112 @@ import com.jjoe64.graphview.LineGraphView;
 
 public class Stats extends Activity {
 
+	TimeZone MyTimezone = TimeZone.getDefault();
+	Calendar calendar = Calendar.getInstance();
+	SQLiteDatabase db;
+	String date;
+	String month;
+	String year;
+	String ValuesX [] = new String[7];
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_stats);
 		
-		double values1 []=new double[]{5,7,13,9,4,10,6};
-		double values2 []=new double[]{5,7,13,5,6,10,2};
+		
+		db=openOrCreateDatabase("NGAJ.db",MODE_PRIVATE,null);
+
+		date=Integer.toString(calendar.get(Calendar.DATE));
+		month=Integer.toString(calendar.get(Calendar.MONTH)+1);
+		year=Integer.toString(calendar.get(Calendar.YEAR));
+
+		double values1 []=new double[7]; //{5,7,13,9,4,10,6};
+		double values2 []=new double[7]; //{5,7,13,5,6,10,2};
+		
+		/*int Day_Week = calendar.get(Calendar.DAY_OF_WEEK);
+		
+		if(Day_Week==1)
+		{
+			Day_Week=6;
+		}
+		else
+		{
+			Day_Week -= 2;
+		}
+		
+		int i = Day_Week;
+		int target=0;*/
+		
+		for(int i=6;i>=0;i--)
+	    {
+			double TotalDistance=0;
+			Cursor cr1= db.rawQuery("Select SUM(Distance) as TotalDistance From tblTracks Where Date='"+year+"-"+month+"-"+date+"'",null);
+	    	if(cr1.moveToFirst())
+			{
+			TotalDistance = (double)cr1.getFloat(cr1.getColumnIndex("TotalDistance"));
+			}
+			values1[i]=TotalDistance;
+		
+			double TotalSteps=0;
+			cr1= db.rawQuery("Select SUM(Steps) From tblTracks Where Date='"+year+"-"+month+"-"+date+"'",null);
+			if(cr1.moveToFirst())
+			{
+			TotalSteps = cr1.getInt(0);
+			}
+			values2[i]=TotalSteps;
+			
+			ValuesX[i]=date+"\n"+month;
+			decreaseDate();
+			
+			
+	    }
 		
      		LinearLayout layout1 = (LinearLayout) findViewById(R.id.graph2);  
      		LinearLayout layout2=(LinearLayout) findViewById(R.id.graph1); 
-     		DrawGraphs(layout1,values1);
-     		DrawGraphs(layout2,values2);
-		
-		
-		
+     		DrawGraphs(layout1,values1,"Total Distance(Km)");
+     		DrawGraphs(layout2,values2,"Total Steps");
 	}
 	
-	public void DrawGraphs(LinearLayout layout,double [] values)
+	private void decreaseDate()
+	{
+		int intDate = Integer.parseInt(date);
+		int intMonth=Integer.parseInt(month);
+		int intYear=Integer.parseInt(year);
+		
+		Calendar calendar = Calendar.getInstance();
+		calendar.set(Calendar.YEAR,intYear);
+		calendar.set(Calendar.MONTH, (intMonth-1));
+		
+		if(intDate>1)
+		{
+			intDate--;
+		}
+		else
+		{
+						
+			if(intMonth>1)
+			{
+				intMonth--;
+			}
+			else
+			{
+				intMonth=12;
+				intYear--;
+			}
+			calendar.set(Calendar.YEAR,intYear);
+			calendar.set(Calendar.MONTH, (intMonth-1));
+			intDate=calendar.getActualMaximum(Calendar.DAY_OF_MONTH);	
+			
+		}
+		
+		date=Integer.toString(intDate);
+		month=Integer.toString(intMonth);
+		year=Integer.toString(intYear);
+	}
+
+	
+	public void DrawGraphs(LinearLayout layout,double [] values,String title)
 	{
 		
 		GraphViewData[] data = new GraphViewData[7];  
@@ -43,10 +137,10 @@ public class Stats extends Activity {
 		GraphViewSeries exampleSeries = new GraphViewSeries(data);
 		GraphView graphView = new LineGraphView(  
 			      this // context  
-			      , "GraphViewDemo" // heading  
+			      , title // heading  
 			);  
 			graphView.addSeries(exampleSeries); // data  
-			graphView.setHorizontalLabels(new String[] {"M", "T","W","TH","F","Sa","S"});
+			graphView.setHorizontalLabels(ValuesX);
 		    Arrays.sort(values);
 			double min=values[0];
 			double max=values[6];

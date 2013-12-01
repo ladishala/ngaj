@@ -1,8 +1,11 @@
 package hig.herd.ngaj;
 
+
 import java.text.DecimalFormat;
 import java.util.Timer;
 import java.util.TimerTask;
+
+
 
 import android.app.Notification;
 import android.app.PendingIntent;
@@ -72,8 +75,8 @@ LocationListener
 		
 		
 		mLocationManager = (LocationManager)mContext.getSystemService(LOCATION_SERVICE);
-		mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 5000, 5, this);
-		mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,5000,5,this);
+		mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 5000, 10, this);
+		mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,5000,10,this);
 		
 		
 		Send = new Intent();
@@ -199,7 +202,7 @@ LocationListener
 			maxspeed=speed;
 		}
 		
-		avgSpeed = totaldistance/Float.parseFloat(Integer.toString(time));
+		avgSpeed = totaldistance*3600/Float.parseFloat(Integer.toString(time));
 		String strSpeed = new DecimalFormat("#.##").format(
                 (double) (speed)).toString();
 		String strAvgSpeed = new DecimalFormat("#.##").format(

@@ -9,16 +9,18 @@
     tools:context=".MainActivity"
     android:background="@drawable/background" >
 
-    <org.osmdroid.views.MapView
-        android:id="@+id/mapview"
+    
+    <fragment 
+ 		android:id="@+id/mapview"
+  	    android:name="com.google.android.gms.maps.MapFragment"
+  	    class="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_above="@+id/statisticsr1"
         android:layout_alignParentTop="true"
         android:layout_marginTop="37dp"
-        android:clickable="true" >
-
-    </org.osmdroid.views.MapView>
+        android:clickable="true" />
+    
 
     <Button
         android:id="@+id/btnStart"

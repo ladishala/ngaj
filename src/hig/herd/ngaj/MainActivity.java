@@ -1,21 +1,22 @@
 package hig.herd.ngaj;
 
+import java.util.ArrayList;
 
-import org.osmdroid.util.GeoPoint;
-import org.osmdroid.views.MapController;
-import org.osmdroid.views.MapView;
-import org.osmdroid.views.overlay.MyLocationOverlay;
-import org.osmdroid.views.overlay.PathOverlay;
+import com.google.android.gms.maps.CameraUpdate;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.android.gms.maps.SupportMapFragment;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.graphics.Color;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.Menu;
@@ -24,7 +25,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-public class MainActivity extends Activity {
+public class MainActivity extends FragmentActivity {
 
 	/**
 	 * Declare GUI components
@@ -37,13 +38,12 @@ public class MainActivity extends Activity {
 	TextView txtSpeed;
 	TextView txtSpeedExtras;
 	TextView txtDistance;
-	PathOverlay myPath;
-	MyLocationOverlay myLocation;
-	MapView mapView;
-	MapController mapController;
+	GoogleMap mapView;
+	ArrayList<LatLng> latLngList = new ArrayList<LatLng>();
+
 	Intent serviceIntent;
 	Button btnStart;
-	Boolean OrientationChange=false;
+	Boolean OrientationChange;
 	
 	/*
 	 * Key For knowing app state
@@ -72,17 +72,19 @@ public class MainActivity extends Activity {
 		 * 
 		 * 
 		 */
-		mapView = (MapView) findViewById(R.id.mapview);
-        mapView.setBuiltInZoomControls(true);
+		mapView = ((SupportMapFragment)getSupportFragmentManager().findFragmentById(R.id.mapview)).getMap();
+		mapView.setMyLocationEnabled(true);
+		//mapView.setMyLocationEnabled(true);
+        /*mapView.setBuiltInZoomControls(true);
         mapController = mapView.getController();
-        mapController.setZoom(16);
+        mapController.setZoom(16);*/
         
         /**
          * Declare myLocationOverlay to show current location pointer on map 
          * also declared path overlay which is used later do draw track
          */
-        myLocation = new MyLocationOverlay(this,mapView);
-        myPath=new PathOverlay(Color.RED, this);
+       /* myLocation = new MyLocationOverlay(this,mapView);
+        myPath=new PathOverlay(Color.RED, this);*/
      }
 
 	@Override
@@ -94,7 +96,7 @@ public class MainActivity extends Activity {
 	public void onPause()
 	{
 		super.onPause();
-		myLocation.disableMyLocation();
+		//myLocation.disableMyLocation();
 		savePreferences();
 		
 	}
@@ -102,7 +104,7 @@ public class MainActivity extends Activity {
 	{
 		super.onPause();
 		stopService(serviceIntent);
-		myLocation.disableMyLocation();
+		//myLocation.disableMyLocation();
 		if(k==1)
 		{
 		k=2;
@@ -114,16 +116,20 @@ public class MainActivity extends Activity {
 		super.onResume();
 		getPreferences();
 		
-		if(k==1 || OrientationChange)
+		if(k==1 || (k==2 && OrientationChange))
 		{
 			btnStart.setText("Pause");
-			myLocation.enableMyLocation();
-			myLocation.enableFollowLocation();
-			myLocation.setDrawAccuracyEnabled(false);
-	        mapView.getOverlays().add(myLocation);
+			//myLocation.enableMyLocation();
+			//myLocation.enableFollowLocation();
+			//myLocation.setDrawAccuracyEnabled(false);
+	        //mapView.getOverlays().add(myLocation);
 	        IntentFilter intentFilter = new IntentFilter("hig.herd.NGAJ.RECEIVEDATA");
 	        LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(this.ReceiveData ,intentFilter);   
 	        OrientationChange=false;
+	        k=1;
+	        serviceIntent.putExtra("Key", k);
+	        startService(serviceIntent);
+	        
 		}
 		else if(k==2)
 		{
@@ -158,10 +164,10 @@ public class MainActivity extends Activity {
 					startService(serviceIntent);
 					IntentFilter intentFilter = new IntentFilter("hig.herd.NGAJ.RECEIVEDATA");
 			        LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(ReceiveData ,intentFilter); 
-					myLocation.enableMyLocation();
-			        myLocation.enableFollowLocation();
-			        myLocation.setDrawAccuracyEnabled(false);
-			        mapView.getOverlays().add(myLocation);
+					//myLocation.enableMyLocation();
+			        //myLocation.enableFollowLocation();
+			        //myLocation.setDrawAccuracyEnabled(false);
+			        //mapView.getOverlays().add(myLocation);
 					 
 				} catch (Exception ex) {
 					// TODO Auto-generated catch block
@@ -181,13 +187,52 @@ public class MainActivity extends Activity {
 			txtDistance.setText("0.00");
 			txtSteps.setText("0");
 			txtSpeedExtras.setText("0 avg 0 max");
-			myPath.clearPath();
+			latLngList.clear();
+			mapView.clear();
 			}
 		});
 		Alert.show();
 				
 	}
-	
+	private void showDiscardAlert()
+	{
+		Alert = new AlertDialog.Builder(this);
+		Alert.setTitle("Discard Work!");
+		Alert.setMessage("Do you want to discard your current work?\nThis cannot be undone!");
+		Alert.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+			
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				
+				try {
+					k=0;	
+					btnStart.setText("Start");
+					txtTime.setText("00:00:00");
+					txtSpeed.setText("0.00");
+					txtDistance.setText("0.00");
+					txtSteps.setText("0");
+					txtSpeedExtras.setText("0 avg 0 max");
+					latLngList.clear();
+                    mapView.clear();
+					 
+				} catch (Exception ex) {
+					// TODO Auto-generated catch block
+				;
+				}
+				
+			}
+		});
+		Alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+			
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				showPauseAlert();
+			}
+		});
+		Alert.show();
+		
+		
+	}
 	public void startRecording(View v)
 	{ 
 		/*
@@ -211,23 +256,21 @@ public class MainActivity extends Activity {
         btnStart.setText("Pause");
         k=1;
         
+        latLngList.clear();
+        mapView.clear();
         
-        myLocation.enableMyLocation();
-        myLocation.enableFollowLocation();
-        myLocation.setDrawAccuracyEnabled(false);
-        mapView.getOverlays().add(myLocation);
 		}
 		else if(k==1)
 		{
 			k=2;
-			myLocation.disableMyLocation();
 			stopService(serviceIntent);
 			showPauseAlert();	
 		}
 		
 	}
 	
-	public Object onRetainNonConfigurationInstance()
+	
+	public Object onRetainCustomNonConfigurationInstance()
 	{
 		OrientationChange=true;
 		return OrientationChange;
@@ -246,10 +289,17 @@ public class MainActivity extends Activity {
 		extras.putString("Steps", (String) txtSteps.getText());
 		extras.putString("SpeedExtras", (String) txtSpeedExtras.getText());
 		extras.putString("Distance", (String) txtDistance.getText());
+		extras.putInt("Size", latLngList.size());		 
+		for (int j = 0; j < latLngList.size(); j++) {
+			extras.putFloat("Cord_Lat_" + j,(float) latLngList.get(j).latitude);
+			extras.putFloat("Cord_Long_" + j,(float) latLngList.get(j).longitude);
+			}
 		i.putExtras(extras);
 		s.putExtras(extras);
 		startService(s);				
 		startActivity(i);	
+		latLngList.clear();
+		mapView.clear();
 	}
 	
 	private void showPauseAlert()
@@ -279,24 +329,13 @@ public class MainActivity extends Activity {
 			k=1;
 			serviceIntent.putExtra("Key", 1);
 			startService(serviceIntent);
-			myLocation.enableMyLocation();
-	        myLocation.enableFollowLocation();
-	        myLocation.setDrawAccuracyEnabled(false);
-	        mapView.getOverlays().add(myLocation);
 			}
 		});
 		Alert.setNeutralButton("Discard", new DialogInterface.OnClickListener() {
 			
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
-			k=0;	
-			btnStart.setText("Start");
-			txtTime.setText("00:00:00");
-			txtSpeed.setText("0.00");
-			txtDistance.setText("0.00");
-			txtSteps.setText("0");
-			txtSpeedExtras.setText("0 avg 0 max");
-			myPath.clearPath();
+			showDiscardAlert();
 			}
 		});
 		Alert.show();
@@ -349,25 +388,42 @@ public class MainActivity extends Activity {
 	 */
 	private void addPoint(double Latitude,double Longitude)
 	{
-		GeoPoint Point = new GeoPoint(Latitude,Longitude);
-		if(Latitude!=0 && Longitude!=0)
-			
-			myPath.addPoint(Point);
-			mapView.getOverlays().add(myPath);
-			mapController.setCenter(Point);
-			mapController.setZoom(17);
+		if(Latitude!=0 &&Longitude!=0)
+		{
+		LatLng Point = new LatLng(Latitude,Longitude);
+		CameraUpdate camUpdate = CameraUpdateFactory.newLatLngZoom(Point,15);
+        mapView.animateCamera(camUpdate);
+		latLngList.add(Point);
+		mapView.addPolyline(new PolylineOptions().addAll(latLngList)
+                .width(6).color(-16776961));
+		}
 	}
 	
 	private void savePreferences()
 	{
 		getPreferences(MODE_PRIVATE).edit().putInt("Key",k).commit();
-		getPreferences(MODE_PRIVATE).edit().putBoolean("OrientationChange", OrientationChange);
+		getPreferences(MODE_PRIVATE).edit().putBoolean("OrientationChange", OrientationChange).commit();
+		getPreferences(MODE_PRIVATE).edit().putInt("Size", latLngList.size()).commit();
+		 
+		for (int i = 0; i < latLngList.size(); i++) {
+            getPreferences(MODE_PRIVATE).edit().remove("Cord_Lat_" + i).commit();
+            getPreferences(MODE_PRIVATE).edit().remove("Cord_Long_" + i).commit();
+            getPreferences(MODE_PRIVATE).edit().putFloat("Cord_Lat_" + i,(float) latLngList.get(i).latitude).commit();
+            getPreferences(MODE_PRIVATE).edit().putFloat("Cord_Long_" + i,(float) latLngList.get(i).longitude).commit();
+			}
 		
 	}
 	private void getPreferences()
 	{
 		k=getPreferences(MODE_PRIVATE).getInt("Key",0);
 		OrientationChange=getPreferences(MODE_PRIVATE).getBoolean("OrientationChange", false);
+		latLngList.clear();
+        int size = getPreferences(MODE_PRIVATE).getInt("Size", 0);
+        for (int i = 0; i < size; i++) {
+            double lat = (double) getPreferences(MODE_PRIVATE).getFloat("Cord_Lat_" + i, (float) 5.0);
+            double lng = (double) getPreferences(MODE_PRIVATE).getFloat("Cord_Long_" + i, (float) 5.0);
+            latLngList.add(new LatLng(lat, lng));
+        }
 	}
 	
 	public void cameraClick(View v)
@@ -402,7 +458,14 @@ public class MainActivity extends Activity {
 			final String Distance = intent.getStringExtra("Distance");
 			final String Speed = intent.getStringExtra("Speed");
 			final String SpeedExtras = intent.getStringExtra("SpeedExtras");
+			if(latLngList.isEmpty())
+			{
+				addPoint(Latitude,Longitude);
+			}
+			else if(Latitude!=latLngList.get(latLngList.size()-1).latitude && Longitude!=latLngList.get(latLngList.size()-1).longitude)
+			{
 			addPoint(Latitude,Longitude);
+			}
 			txtSteps.setText(Integer.toString(Steps));
 			txtTime.setText(Time);
 			txtDistance.setText(Distance);
@@ -410,6 +473,6 @@ public class MainActivity extends Activity {
 			txtSpeedExtras.setText(SpeedExtras);
 			Log.d("BroadCast Recieveri","I Got The message From Service: "+Integer.toString(Steps)+" Latitude: "+Double.toString(Latitude)+" Longitude: "+Double.toString(Longitude));
 		}
-	}; 
+	};
 
 }

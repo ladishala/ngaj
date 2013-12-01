@@ -158,16 +158,16 @@
             </LinearLayout>
         </LinearLayout>
 
-        <org.osmdroid.views.MapView
-            android:id="@+id/rmapview"
+        <fragment 
+ 		android:id="@+id/rmapview"
+ 		android:name="com.google.android.gms.maps.MapFragment"
+ 		class="com.google.android.gms.maps.SupportMapFragment"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_above="@+id/rstatisticsr1"
             android:layout_alignParentLeft="true"
             android:layout_below="@+id/rhelloworld"
-            android:clickable="true" >
-
-        </org.osmdroid.views.MapView>
+            android:clickable="true" />
 
     </RelativeLayout>
 

@@ -2,28 +2,38 @@ package hig.herd.ngaj;
 
 
 
+
 import java.io.File;
 import java.io.FileOutputStream;
+import java.util.ArrayList;
+
 
 import org.brickred.socialauth.android.DialogListener;
 import org.brickred.socialauth.android.SocialAuthAdapter;
 import org.brickred.socialauth.android.SocialAuthError;
 import org.brickred.socialauth.android.SocialAuthListener;
 import org.brickred.socialauth.android.SocialAuthAdapter.Provider;
-import org.osmdroid.views.MapController;
-import org.osmdroid.views.MapView;
-import org.osmdroid.views.overlay.PathOverlay;
+
+
+
+import com.google.android.gms.maps.CameraUpdate;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.PolylineOptions;
 
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Bitmap.Config;
+import android.support.v4.app.FragmentActivity;
 import android.view.Menu;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -31,7 +41,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class Results extends Activity {
+public class Results extends FragmentActivity {
 
 	
 	/**
@@ -43,15 +53,14 @@ public class Results extends Activity {
 	LinearLayout bar;
 	AlertDialog.Builder Alert;
 	TextView helloworld;
-	PathOverlay myPath;
-	MapView mapView;
-	MapController mapController;
+	GoogleMap mapView;
 	TextView txtSteps;
 	TextView txtTime;
 	TextView txtSpeed;
 	TextView txtSpeedExtras;
 	TextView txtDistance;
 	RelativeLayout Layout1;
+	ArrayList<LatLng> latLngList = new ArrayList<LatLng>();
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -72,6 +81,13 @@ public class Results extends Activity {
 		String strSpeedExtras=i.getStringExtra("SpeedExtras");
 		String strTime=i.getStringExtra("Time");
 		String strDistance=i.getStringExtra("Distance");
+		int size = i.getIntExtra("Size", 0);
+		for(int j=0;j<size;j++)
+		{
+			double lat = (double) i.getFloatExtra("Cord_Lat_" + j, (float) 5.0);
+            double lng = (double) i.getFloatExtra("Cord_Long_" + j, (float) 5.0);
+            latLngList.add(new LatLng(lat, lng));
+		}
 		
 		txtSteps.setText(strSteps);
 		txtSpeed.setText(strSpeed);
@@ -101,10 +117,16 @@ public class Results extends Activity {
 		 * Get the MapView widget, set the zoom controllers 
 		 * and set the initial zoom level of the map
 		 */
-		mapView = (MapView) findViewById(R.id.rmapview);
-        mapView.setBuiltInZoomControls(true);
-        mapController = mapView.getController();
-        mapController.setZoom(3);
+		mapView = ((SupportMapFragment)getSupportFragmentManager().findFragmentById(R.id.rmapview)).getMap();
+		CameraUpdate camUpdate = CameraUpdateFactory.newLatLngZoom(latLngList.get(latLngList.size()/2),14);
+        mapView.animateCamera(camUpdate);
+		mapView.addPolyline(new PolylineOptions().addAll(latLngList).width(6).color(-16776961));
+		mapView.addMarker(new MarkerOptions()
+        .position(latLngList.get(0))
+        .title("Start Point"));
+		mapView.addMarker(new MarkerOptions()
+        .position(latLngList.get(latLngList.size()-1))
+        .title("End Point"));
 		
 	}
 
@@ -271,5 +293,6 @@ public class Results extends Activity {
 
 		}
 	}
+
 
 }
