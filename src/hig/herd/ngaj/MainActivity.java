@@ -23,6 +23,8 @@ import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 public class MainActivity extends FragmentActivity {
@@ -38,6 +40,7 @@ public class MainActivity extends FragmentActivity {
 	TextView txtSpeed;
 	TextView txtSpeedExtras;
 	TextView txtDistance;
+	ProgressBar mProgress;
 	GoogleMap mapView;
 	ArrayList<LatLng> latLngList = new ArrayList<LatLng>();
 
@@ -52,6 +55,11 @@ public class MainActivity extends FragmentActivity {
 	 * 2 - Destroyed while recording
 	 */
 	int k=0;
+	
+	int TotalScore=0;
+	int Level;
+	ImageView CurrentLevel;
+	ImageView NextLevel;
 
 
 	@Override
@@ -64,6 +72,9 @@ public class MainActivity extends FragmentActivity {
 		txtTime = (TextView)findViewById(R.id.time2);	
 		txtDistance = (TextView)findViewById(R.id.distance2);	
 		btnStart=(Button)findViewById(R.id.btnStart);
+		mProgress =(ProgressBar)findViewById(R.id.progressBar1);
+		CurrentLevel=(ImageView)findViewById(R.id.CurrentLevel);
+		NextLevel=(ImageView)findViewById(R.id.NextLevel);
 		serviceIntent = new Intent(this,GPSservice.class);
 		
 		/**
@@ -74,12 +85,7 @@ public class MainActivity extends FragmentActivity {
 		 */
 		mapView = ((SupportMapFragment)getSupportFragmentManager().findFragmentById(R.id.mapview)).getMap();
         
-        /**
-         * Declare myLocationOverlay to show current location pointer on map 
-         * also declared path overlay which is used later do draw track
-         */
-       /* myLocation = new MyLocationOverlay(this,mapView);
-        myPath=new PathOverlay(Color.RED, this);*/
+		getLevel();
      }
 
 	@Override
@@ -116,11 +122,19 @@ public class MainActivity extends FragmentActivity {
 			mapView.setMyLocationEnabled(true);
 	        IntentFilter intentFilter = new IntentFilter("hig.herd.NGAJ.RECEIVEDATA");
 	        LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(this.ReceiveData ,intentFilter);   
+	                
+	        if(k==2 && OrientationChange)
+	        {
+	        	serviceIntent.putExtra("Key", 1);
+	        }
+	        else
+	        {
+	        serviceIntent.putExtra("Key", 5);
+	        }
 	        OrientationChange=false;
 	        k=1;
-	        serviceIntent.putExtra("Key", 5);
 	        startService(serviceIntent);
-	        
+	        	        
 		}
 		else if(k==2)
 		{
@@ -278,6 +292,7 @@ public class MainActivity extends FragmentActivity {
 		extras.putString("Steps", (String) txtSteps.getText());
 		extras.putString("SpeedExtras", (String) txtSpeedExtras.getText());
 		extras.putString("Distance", (String) txtDistance.getText());
+		extras.putInt("Level", Level);
 		extras.putInt("Size", latLngList.size());		 
 		for (int j = 0; j < latLngList.size(); j++) {
 			extras.putFloat("Cord_Lat_" + j,(float) latLngList.get(j).latitude);
@@ -384,11 +399,62 @@ public class MainActivity extends FragmentActivity {
 		CameraUpdate camUpdate = CameraUpdateFactory.newLatLngZoom(Point,15);
         mapView.animateCamera(camUpdate);
 		latLngList.add(Point);
+		mapView.clear();
 		mapView.addPolyline(new PolylineOptions().addAll(latLngList)
                 .width(6).color(-16776961));
 		}
 	}
-	
+	private void getLevel()
+	{
+		TotalScore=getSharedPreferences("TotalScore",MODE_PRIVATE).getInt("TotalScore",0);
+		Level = calculateLevel(TotalScore);	
+	}
+	private int calculateLevel(int score)
+	{
+		int result=1;
+		if(score>=10501)
+		{
+			result=5;
+			mProgress.setMax(score);
+			mProgress.setProgress(score);
+			CurrentLevel.setImageResource(R.drawable.elite);
+			NextLevel.setImageResource(R.drawable.elite);
+		}
+		else if(score>=5751)
+		{
+			result=4;
+			mProgress.setMax(10500);
+			mProgress.setProgress(score);
+			CurrentLevel.setImageResource(R.drawable.four);
+			NextLevel.setImageResource(R.drawable.five);
+		}
+		else if(score>=2751)
+		{
+			result=3;
+			mProgress.setMax(5750);
+			mProgress.setProgress(score);
+			CurrentLevel.setImageResource(R.drawable.three);
+			NextLevel.setImageResource(R.drawable.four);
+		}
+		else if(score>=1001)
+		{
+			result=2;
+			mProgress.setMax(2750);
+			mProgress.setProgress(score);
+			CurrentLevel.setImageResource(R.drawable.two);
+			NextLevel.setImageResource(R.drawable.three);
+		}
+		else
+		{
+			result=1;
+			mProgress.setMax(2750);
+			mProgress.setProgress(score);
+			CurrentLevel.setImageResource(R.drawable.one);
+			NextLevel.setImageResource(R.drawable.two);
+		}
+		
+		return result;
+	}
 	private void savePreferences()
 	{
 		getPreferences(MODE_PRIVATE).edit().putInt("Key",k).commit();

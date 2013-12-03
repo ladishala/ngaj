@@ -29,11 +29,40 @@
         android:layout_height="fill_parent"
         android:orientation="vertical" >
 
-        <ProgressBar
-            android:id="@+id/progressBar1"
-            style="?android:attr/progressBarStyleHorizontal"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content" >
+
+            <ImageView
+                android:id="@+id/CurrentLevel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.57"
+                android:src="@drawable/one"
+                android:contentDescription="@string/Image" />
+
+            <ProgressBar
+                android:id="@+id/progressBar1"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="131dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.57"
+                android:indeterminate="false"
+      			  android:max="1000"
+        		android:paddingBottom="10dp"
+       			 android:paddingTop="5dp"
+       			 android:progress="500"
+      			  android:progressDrawable="@drawable/progressbarstyle"  />
+	
+            <ImageView
+                android:id="@+id/NextLevel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.57"
+                android:src="@drawable/two"
+                android:contentDescription="@string/Image" />
+
+        </LinearLayout>
 
         <LinearLayout
             android:id="@+id/statisticsr1"
@@ -102,7 +131,7 @@
             android:id="@+id/statisticsr2"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1.5"
+            android:layout_weight="1.6"
             android:baselineAligned="false"
             android:orientation="horizontal" >
 
@@ -171,7 +200,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1"
+            android:layout_weight="0.9"
             android:layout_marginBottom="1dp" >
 
             <Button
@@ -189,6 +218,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1.2"
                 android:text="@string/ViewTracks"
+                    android:onClick="viewTracks"
                 android:textColor="#FFFFFF"  />
 
             <Button
@@ -205,7 +235,7 @@
             android:id="@+id/btnStart"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1"
+            android:layout_weight="0.9"
             android:onClick="startRecording"
             android:text="@string/Start"
             android:textColor="#FFFFFF" 

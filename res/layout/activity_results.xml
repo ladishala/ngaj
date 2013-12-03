@@ -16,22 +16,6 @@
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true" >
 
-        <ProgressBar
-            android:id="@+id/rprogressBar1"
-            style="?android:attr/progressBarStyleHorizontal"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentTop="true" />
-
-        <TextView
-            android:id="@+id/rhelloworld"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="14dp"
-            android:text="@string/Text" />
-
         <LinearLayout
             android:id="@+id/rstatisticsr2"
             android:layout_width="fill_parent"
@@ -166,8 +150,55 @@
             android:layout_height="wrap_content"
             android:layout_above="@+id/rstatisticsr1"
             android:layout_alignParentLeft="true"
-            android:layout_below="@+id/rhelloworld"
+            android:layout_below="@+id/txtRank"
             android:clickable="true" />
+
+        <ImageView
+            android:id="@+id/rCurrentLevel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/rNextLevel"
+            android:layout_alignLeft="@+id/rmapview"
+            android:paddingRight="5dp"
+            android:src="@drawable/one"
+            android:contentDescription="@string/Image" />
+      
+        <ImageView
+            android:id="@+id/rNextLevel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true"
+            android:paddingLeft="5dp"
+            android:src="@drawable/two"
+            android:contentDescription="@string/Image" />
+
+        <TextView
+            android:id="@+id/txtRank"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentRight="true"
+            android:layout_below="@+id/rCurrentLevel"
+            android:gravity="center"
+            android:text="@string/Medal"
+            android:textSize="18sp" />
+
+        <ProgressBar
+            android:id="@+id/rprogressBar1"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/rNextLevel"
+            android:layout_alignParentTop="true"
+            android:layout_toLeftOf="@+id/rNextLevel"
+            android:layout_toRightOf="@+id/rCurrentLevel"
+            android:indeterminate="false"
+        	android:max="1000"
+     	 	android:paddingBottom="10dp"
+       	    android:paddingTop="5dp"
+     	    android:progress="500"
+     	    android:progressDrawable="@drawable/progressbarstyle"  />
 
     </RelativeLayout>
 
@@ -183,5 +214,8 @@
         android:gravity="center" >
 
     </LinearLayout>
+
+    
+      
   
 </RelativeLayout>

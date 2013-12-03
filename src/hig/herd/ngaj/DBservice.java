@@ -34,7 +34,7 @@ public class DBservice extends IntentService {
 		Date today = new Date();
 		String strDate = dateFormatter.format(today);
 		int size = intent.getIntExtra("Size", 0);
-
+		
 		
 		db=openOrCreateDatabase("NGAJ.db",MODE_PRIVATE,null);
 		db.execSQL("Create Table if not exists tblTracks (ID INTEGER PRIMARY KEY AUTOINCREMENT,Name Varchar,Distance FLOAT,Time Varchar,SpeedExtras Varchar, Steps Integer,Date DateTime)");

@@ -37,26 +37,20 @@ public class Stats extends Activity {
 		
 		db=openOrCreateDatabase("NGAJ.db",MODE_PRIVATE,null);
 
+		if(calendar.get(Calendar.DATE)<=9)
+		{
+			date="0"+Integer.toString(calendar.get(Calendar.DATE));
+		}
+		else
+		{
 		date=Integer.toString(calendar.get(Calendar.DATE));
+		}
 		month=Integer.toString(calendar.get(Calendar.MONTH)+1);
 		year=Integer.toString(calendar.get(Calendar.YEAR));
 
 		double values1 []=new double[7]; //{5,7,13,9,4,10,6};
 		double values2 []=new double[7]; //{5,7,13,5,6,10,2};
 		
-		/*int Day_Week = calendar.get(Calendar.DAY_OF_WEEK);
-		
-		if(Day_Week==1)
-		{
-			Day_Week=6;
-		}
-		else
-		{
-			Day_Week -= 2;
-		}
-		
-		int i = Day_Week;
-		int target=0;*/
 		
 		for(int i=6;i>=0;i--)
 	    {
@@ -66,7 +60,7 @@ public class Stats extends Activity {
 			{
 			TotalDistance = (double)cr1.getFloat(cr1.getColumnIndex("TotalDistance"));
 			}
-			values1[i]= Double.parseDouble(new DecimalFormat("#.#").format(TotalDistance)); 
+			values1[i]= Double.parseDouble(new DecimalFormat("#").format(TotalDistance)); 
 		
 			double TotalSteps=0;
 			cr1= db.rawQuery("Select SUM(Steps) From tblTracks Where Date='"+year+"-"+month+"-"+date+"'",null);
@@ -74,7 +68,7 @@ public class Stats extends Activity {
 			{
 			TotalSteps = cr1.getInt(0);
 			}
-			values2[i]=Double.parseDouble(new DecimalFormat("#.#").format(TotalSteps)); 
+			values2[i]=Double.parseDouble(new DecimalFormat("#").format(TotalSteps)); 
 			
 			ValuesX[i]=date+"-"+month;
 			decreaseDate();
@@ -120,7 +114,14 @@ public class Stats extends Activity {
 			
 		}
 		
-		date=Integer.toString(intDate);
+		if(intDate<=9)
+		{
+		date="0"+Integer.toString(intDate);
+		}
+		else
+		{
+		date=Integer.toString(intDate);	
+		}
 		month=Integer.toString(intMonth);
 		year=Integer.toString(intYear);
 	}
@@ -143,11 +144,11 @@ public class Stats extends Activity {
 			graphView.addSeries(exampleSeries); // data  
 			graphView.setHorizontalLabels(ValuesX);
 		    Arrays.sort(values);
-			double min=Double.parseDouble(new DecimalFormat("#.#").format(values[0])); 
-			double max=Double.parseDouble(new DecimalFormat("#.#").format(values[6]));
-			double middle=Double.parseDouble(new DecimalFormat("#.#").format((max+min)/2));
-			double m1=Double.parseDouble(new DecimalFormat("#.#").format((middle+max)/2));
-			double m2=Double.parseDouble(new DecimalFormat("#.#").format((middle+min)/2));
+			double min=Double.parseDouble(new DecimalFormat("#").format(values[0])); 
+			double max=Double.parseDouble(new DecimalFormat("#").format(values[6]));
+			double middle=Double.parseDouble(new DecimalFormat("#").format((max+min)/2));
+			double m1=Double.parseDouble(new DecimalFormat("#").format((middle+max)/2));
+			double m2=Double.parseDouble(new DecimalFormat("#").format((middle+min)/2));
 			String a []={String.valueOf(max),String.valueOf(m1),String.valueOf(middle),String.valueOf(m2),String.valueOf(min)};
 			graphView.setVerticalLabels(a);
 			layout.addView(graphView); 

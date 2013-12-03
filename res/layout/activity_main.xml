@@ -178,15 +178,6 @@
         </LinearLayout>
     </LinearLayout>
 
-    <ProgressBar
-        android:id="@+id/progressBar1"
-        style="?android:attr/progressBarStyleHorizontal"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/mapview"
-        android:layout_alignParentTop="true"
-        android:layout_alignRight="@+id/mapview" />
-
     <Button
         android:id="@+id/btnStats"
         android:layout_width="wrap_content"
@@ -198,6 +189,15 @@
         android:onClick="statsClick"
         android:textColor="#FFFFFF"  />
 
+    <ImageView
+        android:id="@+id/CurrentLevel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/mapview"
+        android:paddingRight="5dp"
+        android:src="@drawable/one"
+        android:contentDescription="@string/Image" />
+
     <Button
         android:id="@+id/btnCamera"
         android:layout_width="wrap_content"
@@ -207,5 +207,31 @@
         android:text="@string/Camera"
         android:onClick="cameraClick"
         android:textColor="#FFFFFF"  />
+
+    <ProgressBar
+        android:id="@+id/progressBar1"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/CurrentLevel"
+        android:layout_alignTop="@+id/CurrentLevel"
+        android:layout_toLeftOf="@+id/NextLevel"
+        android:layout_toRightOf="@+id/CurrentLevel"
+        android:indeterminate="false"
+        android:max="1000"
+        android:paddingBottom="10dp"
+        android:paddingTop="5dp"
+        android:progress="500"
+        android:progressDrawable="@drawable/progressbarstyle" />
+
+    <ImageView
+        android:id="@+id/NextLevel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignRight="@+id/mapview"
+        android:layout_alignTop="@+id/progressBar1"
+        android:paddingLeft="5dp"
+        android:src="@drawable/two"
+        android:contentDescription="@string/Image" />
 
 </RelativeLayout>

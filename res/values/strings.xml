@@ -24,5 +24,9 @@
     <string name="Text">Well Done! You have finished this session.</string>
     <string name="title_activity_stats">Stats</string>
     <string name="title_activity_tracks">Tracks</string>
+    <string name="Image">Image Description</string>
+    <string name="Medal">Track Rank: Bronze (125 Points)</string>
+    <string name="title_activity_level_up">LevelUp</string>
+    <string name="LevelUp">Well Done! \nYou have raised one level up!\nYour current level is : 3 (Skilled)</string>
 
 </resources>

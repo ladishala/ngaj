@@ -19,6 +19,7 @@ import org.brickred.socialauth.android.SocialAuthAdapter.Provider;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.GoogleMap.SnapshotReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -31,12 +32,15 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
-import android.graphics.Bitmap.Config;
+import android.graphics.Matrix;
 import android.support.v4.app.FragmentActivity;
 import android.view.Menu;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -61,32 +65,48 @@ public class Results extends FragmentActivity {
 	TextView txtDistance;
 	RelativeLayout Layout1;
 	ArrayList<LatLng> latLngList = new ArrayList<LatLng>();
+	String Filename ="";
+	int TotalScore=0;
+	int Level;
+	ImageView CurrentLevel;
+	ImageView NextLevel;
+	ProgressBar mProgress;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_results);
 		
+		
 		Intent i = getIntent();
 		
-		helloworld = (TextView)findViewById(R.id.rhelloworld);
+		helloworld = (TextView)findViewById(R.id.txtRank);
 		txtSteps = (TextView)findViewById(R.id.rsteps2);	
 		txtSpeed = (TextView)findViewById(R.id.rspeed2);
 		txtSpeedExtras=(TextView)findViewById(R.id.rspeed3);
 		txtTime = (TextView)findViewById(R.id.rtime2);	
 		txtDistance = (TextView)findViewById(R.id.rdistance2);
+		CurrentLevel=(ImageView)findViewById(R.id.rCurrentLevel);
+		NextLevel = (ImageView)findViewById(R.id.rNextLevel);
+		mProgress =(ProgressBar)findViewById(R.id.rprogressBar1);
+		
+		TotalScore=getSharedPreferences("TotalScore",MODE_PRIVATE).getInt("TotalScore",0);
 		
 		String strSteps=i.getStringExtra("Steps");
 		String strSpeed=i.getStringExtra("Speed");
 		String strSpeedExtras=i.getStringExtra("SpeedExtras");
 		String strTime=i.getStringExtra("Time");
 		String strDistance=i.getStringExtra("Distance");
+		Level=i.getIntExtra("Level", 0);
 		int size = i.getIntExtra("Size", 0);
-		for(int j=0;j<size;j++)
+		if(size>0)
 		{
-			double lat = (double) i.getFloatExtra("Cord_Lat_" + j, (float) 5.0);
-            double lng = (double) i.getFloatExtra("Cord_Long_" + j, (float) 5.0);
-            latLngList.add(new LatLng(lat, lng));
+			for(int j=0;j<size;j++)
+			{
+				double lat = (double) i.getFloatExtra("Cord_Lat_" + j, (float) 5.0);
+            	double lng = (double) i.getFloatExtra("Cord_Long_" + j, (float) 5.0);
+            	latLngList.add(new LatLng(lat, lng));
+			}
 		}
 		
 		txtSteps.setText(strSteps);
@@ -110,24 +130,32 @@ public class Results extends FragmentActivity {
 		adapter.addProvider(Provider.EMAIL, R.drawable.camera);
 		adapter.enable(bar);
 		
-
-		
-		
+	
 		/**
 		 * Get the MapView widget, set the zoom controllers 
 		 * and set the initial zoom level of the map
 		 */
 		mapView = ((SupportMapFragment)getSupportFragmentManager().findFragmentById(R.id.rmapview)).getMap();
-		CameraUpdate camUpdate = CameraUpdateFactory.newLatLngZoom(latLngList.get(latLngList.size()/2),14);
-        mapView.animateCamera(camUpdate);
-		mapView.addPolyline(new PolylineOptions().addAll(latLngList).width(6).color(-16776961));
-		mapView.addMarker(new MarkerOptions()
-        .position(latLngList.get(0))
-        .title("Start Point"));
-		mapView.addMarker(new MarkerOptions()
-        .position(latLngList.get(latLngList.size()-1))
-        .title("End Point"));
 		
+		if(size>0)
+		{
+			CameraUpdate camUpdate = CameraUpdateFactory.newLatLngZoom(latLngList.get(latLngList.size()/2),14);
+	        mapView.animateCamera(camUpdate);
+			mapView.addPolyline(new PolylineOptions().addAll(latLngList).width(6).color(-16776961));
+			mapView.addMarker(new MarkerOptions().position(latLngList.get(0)).title("Start Point"));
+			mapView.addMarker(new MarkerOptions().position(latLngList.get(latLngList.size()-1)).title("End Point"));
+		}
+		if(Level!=0)
+		{
+		addScore();
+		}
+		else
+		{
+			calculateLevel(TotalScore);
+			calculateMedal();
+		}
+		
+		//addScore();
 	}
 
 	@Override
@@ -136,16 +164,142 @@ public class Results extends FragmentActivity {
 		getMenuInflater().inflate(R.menu.results, menu);
 		return true;
 	}
+	private void addScore()
+	{
+		//Level = calculateLevel(TotalScore);
+		int diff = calculateLevel(TotalScore+calculateMedal())-Level;
+		TotalScore +=calculateMedal();
+		getSharedPreferences("TotalScore",MODE_PRIVATE).edit().putInt("TotalScore",TotalScore).commit();
+		if(diff==1)
+		{
+			Intent i = new Intent(Results.this,LevelUp.class);
+			i.putExtra("Level", (Level+1));
+			startActivity(i);
+		}
+	}
+	private int calculateLevel(int score)
+	{
+		int result=1;
+		if(score>=10501)
+		{
+			result=5;
+			mProgress.setMax(score);
+			mProgress.setProgress(score);
+			CurrentLevel.setImageResource(R.drawable.elite);
+			NextLevel.setImageResource(R.drawable.elite);
+		}
+		else if(score>=5751)
+		{
+			result=4;
+			mProgress.setMax(10500);
+			mProgress.setProgress(score);
+			CurrentLevel.setImageResource(R.drawable.four);
+			NextLevel.setImageResource(R.drawable.five);
+		}
+		else if(score>=2751)
+		{
+			result=3;
+			mProgress.setMax(5750);
+			mProgress.setProgress(score);
+			CurrentLevel.setImageResource(R.drawable.three);
+			NextLevel.setImageResource(R.drawable.four);
+		}
+		else if(score>=1001)
+		{
+			result=2;
+			mProgress.setMax(2750);
+			mProgress.setProgress(score);
+			CurrentLevel.setImageResource(R.drawable.two);
+			NextLevel.setImageResource(R.drawable.three);
+		}
+		else
+		{
+			result=1;
+			mProgress.setMax(2750);
+			mProgress.setProgress(score);
+			CurrentLevel.setImageResource(R.drawable.one);
+			NextLevel.setImageResource(R.drawable.two);
+		}
+		
+		return result;
+	}
+	private int calculateMedal()
+	{
+		int result =0;
+		double Distance= 0;
+		double avgSpeed= 0;
+		
+		try
+		{
+			int end = txtSpeedExtras.getText().toString().indexOf(" ");
+			Distance = Double.parseDouble(txtDistance.getText().toString());
+			avgSpeed = Double.parseDouble(txtSpeedExtras.getText().toString().substring(0,end));
+		}
+		catch(Exception e)
+		{
+			
+		}
+		
+		if(Distance>=10 && avgSpeed>=15)
+		{
+			result = 500;
+			helloworld.setText("Track Rank: Gold (500 Points)");
+		}
+		else if(Distance>=5 && avgSpeed>=10)
+		{
+			result = 250;
+			helloworld.setText("Track Rank: Silver (250 Points)");
+		}
+		else if(Distance>=3 && avgSpeed>=5)
+		{
+			result = 125;
+			helloworld.setText("Track Rank: Bronze (125 Points)");
+		}
+		else
+		{
+			result = 0;
+			helloworld.setText("Track Rank: No Medal (0 Points)");			
+		}
+		return result;
+		
+	}
 	
 	/**
 	 * The function for taking a screenshot of the view given as
 	 * parameter. It returns the bitmap (screenshot) created. 
 	 */
-	public Bitmap screenShot(View view) {
-		Bitmap bitmap = Bitmap.createBitmap(view.getWidth(), view.getHeight(),Config.ARGB_8888);
-		Canvas canvas = new Canvas(bitmap);
-		view.draw(canvas);
-		return bitmap;
+	public Bitmap screenShot(final View view) {
+		
+		
+	        SnapshotReadyCallback callback = new SnapshotReadyCallback() {
+	        
+	            @Override
+	            public void onSnapshotReady(Bitmap snapshot) {
+	                try {
+	                    view.setDrawingCacheEnabled(true);
+	                    Bitmap backBitmap = view.getDrawingCache();
+	                    Bitmap bmOverlay = Bitmap.createBitmap(
+	                            backBitmap.getWidth(), backBitmap.getHeight(),
+	                            backBitmap.getConfig());
+	                    Canvas canvas = new Canvas(bmOverlay);
+	                    canvas.drawBitmap(backBitmap, new Matrix(), null);
+	                    canvas.drawBitmap(snapshot, 0, helloworld.getBottom()+2, null);
+	                    Filename=Environment.getExternalStorageDirectory()
+                                + "/NgajLastScreenShot"
+                                +".png";
+	                    
+	                   FileOutputStream out = new FileOutputStream(Filename);
+	                    bmOverlay.compress(Bitmap.CompressFormat.PNG, 90, out);
+	                } catch (Exception e) {
+	                    e.printStackTrace();
+	                }
+	            }
+	        };
+
+	        mapView.snapshot(callback);
+	        return BitmapFactory.decodeFile(Environment.getExternalStorageDirectory()+ "/NgajLastScreenShot"+".png");
+	        		
+	          
 		
 	}
 
@@ -170,6 +324,7 @@ public class Results extends FragmentActivity {
 				
 				try {
 					String Message = "I have ran "+txtDistance.getText()+" km with NGAJ. \nHere are my stats.";
+					
 					adapter.uploadImageAsync(Message, "Name.png",screenShot(Layout1), 0, new MessageListener());
 				} catch (Exception ex) {
 					// TODO Auto-generated catch block
@@ -199,18 +354,12 @@ public class Results extends FragmentActivity {
 	 */
 	private void postonother()
 	{
-				
-		String filename = "NGAJ_lastScreenShot.png";
-		File sd = Environment.getExternalStorageDirectory();
-		File dest = new File(sd, filename);
-		Bitmap bitmap = screenShot(bar);
+
+		File dest = new File(Environment.getExternalStorageDirectory()+ "/NgajLastScreenShot"+".png");
+		screenShot(Layout1);
 		
 		try {
-		     FileOutputStream out = new FileOutputStream(dest);
-		     bitmap.compress(Bitmap.CompressFormat.PNG, 90, out);
-		     out.flush();
-		     out.close();
-		     
+		     		     
 		     Uri yourUri = Uri.fromFile(dest);
 			    Intent share = new Intent(Intent.ACTION_SEND);
 				share.setType("image/jpeg");
@@ -235,6 +384,7 @@ public class Results extends FragmentActivity {
 					.getString(SocialAuthAdapter.PROVIDER);
 			if(providerName=="facebook"||providerName=="twitter")
 			{	
+				screenShot(Layout1);
 				showalert(providerName);
 			}
 			else if(providerName=="share_mail")
