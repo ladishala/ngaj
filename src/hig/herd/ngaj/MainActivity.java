@@ -1,6 +1,8 @@
 package hig.herd.ngaj;
 
 import java.util.ArrayList;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -60,6 +62,7 @@ public class MainActivity extends FragmentActivity {
 	int Level;
 	ImageView CurrentLevel;
 	ImageView NextLevel;
+	Timer timer;
 
 
 	@Override
@@ -126,14 +129,15 @@ public class MainActivity extends FragmentActivity {
 	        if(k==2 && OrientationChange)
 	        {
 	        	serviceIntent.putExtra("Key", 1);
+	        	startService(serviceIntent);
 	        }
-	        else
+	        /*else
 	        {
 	        serviceIntent.putExtra("Key", 5);
-	        }
+	        }*/
 	        OrientationChange=false;
 	        k=1;
-	        startService(serviceIntent);
+	        
 	        	        
 		}
 		else if(k==2)
@@ -216,6 +220,7 @@ public class MainActivity extends FragmentActivity {
 					txtSpeedExtras.setText("0 avg 0 max");
 					latLngList.clear();
                     mapView.clear();
+                    stopService(serviceIntent);
 					 
 				} catch (Exception ex) {
 					// TODO Auto-generated catch block
@@ -257,22 +262,41 @@ public class MainActivity extends FragmentActivity {
         //Change button text
         btnStart.setText("Pause");
         k=1;
-        
+        serviceChecker();
         latLngList.clear();
         mapView.clear();
         mapView.setMyLocationEnabled(true);
 		}
 		else if(k==1)
 		{
-			k=2;
-			stopService(serviceIntent);
-			mapView.setMyLocationEnabled(false);
+			getSharedPreferences("GPSServiceState",MODE_PRIVATE).edit().putInt("GPSServiceState",2).commit();
 			showPauseAlert();	
 		}
 		
 	}
 	
-	
+	private void serviceChecker()
+	{
+	 //This method checks if the service is runing while the app is in the record mode if OS killes the service 
+     // then this method will restart it.
+	 // for performance issues we decided to trigger this checker to check every 5 seconds.
+	 timer = new Timer();
+	 timer.scheduleAtFixedRate(new TimerTask() {
+
+	    public void run() {
+	    	Log.d("Checking","Checking");
+	       if(k==1 && getSharedPreferences("GPSServiceState",MODE_PRIVATE).getInt("GPSServiceState",0)==0)
+	        {
+	         serviceIntent.putExtra("Key", 1);
+	         startService(serviceIntent);
+	        }
+	       else if(k==0)
+	    	   {
+	    	   	timer.cancel();
+	    	   }
+	    	   }
+	      }, 0, 5000);
+	}
 	public Object onRetainCustomNonConfigurationInstance()
 	{
 		OrientationChange=true;
@@ -331,7 +355,6 @@ public class MainActivity extends FragmentActivity {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
 			k=1;
-			serviceIntent.putExtra("Key", 1);
 			startService(serviceIntent);
 			mapView.setMyLocationEnabled(true);
 			}
@@ -366,6 +389,7 @@ public class MainActivity extends FragmentActivity {
 				try {
 					
 					startResults(input.getText().toString());
+					stopService(serviceIntent);
 					
 					 
 				} catch (Exception ex) {
@@ -412,7 +436,7 @@ public class MainActivity extends FragmentActivity {
 	private int calculateLevel(int score)
 	{
 		int result=1;
-		if(score>=10501)
+		if(score>=10500)
 		{
 			result=5;
 			mProgress.setMax(score);
@@ -420,27 +444,27 @@ public class MainActivity extends FragmentActivity {
 			CurrentLevel.setImageResource(R.drawable.elite);
 			NextLevel.setImageResource(R.drawable.elite);
 		}
-		else if(score>=5751)
+		else if(score>=5750)
 		{
 			result=4;
-			mProgress.setMax(10500);
-			mProgress.setProgress(score);
+			mProgress.setMax(10500-5750);
+			mProgress.setProgress(score-5750);
 			CurrentLevel.setImageResource(R.drawable.four);
 			NextLevel.setImageResource(R.drawable.five);
 		}
-		else if(score>=2751)
+		else if(score>=2750)
 		{
 			result=3;
-			mProgress.setMax(5750);
-			mProgress.setProgress(score);
+			mProgress.setMax(5750-2750);
+			mProgress.setProgress(score-2750);
 			CurrentLevel.setImageResource(R.drawable.three);
 			NextLevel.setImageResource(R.drawable.four);
 		}
-		else if(score>=1001)
+		else if(score>=1000)
 		{
 			result=2;
-			mProgress.setMax(2750);
-			mProgress.setProgress(score);
+			mProgress.setMax(2750-1000);
+			mProgress.setProgress(score-1000);
 			CurrentLevel.setImageResource(R.drawable.two);
 			NextLevel.setImageResource(R.drawable.three);
 		}

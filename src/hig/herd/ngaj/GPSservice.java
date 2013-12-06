@@ -50,7 +50,19 @@ LocationListener
     private float totaldistance=0;
     private double lastLat=0;
     private double lastLng=0;
-	
+    
+    /**Defines the state of GPSService this value is stored on sharedpreferences
+     * and is shared with all other app components.
+     * 
+     * This Service can have 3 states:
+     * 		0 - Stopped
+     *      1 - Started
+     *      2 - Paused
+     */
+    
+    
+    
+	int state =0;
 	//private double max=0;
 	//private double min=100;
 	Intent Send;
@@ -65,6 +77,12 @@ LocationListener
 		declareListeners();
 		startServiceInForeground();
 		startTimer();
+		state=1;
+		getSharedPreferences("GPSServiceState",MODE_PRIVATE).edit().putInt("GPSServiceState",state).commit();
+	}
+	public void onStart()
+	{
+		
 	}
 	protected void declareListeners() {
 		// TODO Auto-generated method stub
@@ -91,6 +109,8 @@ LocationListener
 		mLocationManager.removeUpdates(this);
 		timer.cancel();
 		savePreferences();
+		state=0;
+		getSharedPreferences("GPSServiceState",MODE_PRIVATE).edit().putInt("GPSServiceState",state).commit();
 		
 	}
 	@Override
@@ -121,7 +141,11 @@ LocationListener
 				max=magnitude;
 				//Log.d("Last max=",Double.toString(max));
 			}*/
+			state = getSharedPreferences("GPSServiceState",MODE_PRIVATE).getInt("GPSServiceState",0);
+			if(state!=2)
+			{
 	       checkforstep();
+			}
 		}
 		
 	}
@@ -154,6 +178,7 @@ LocationListener
 		Send.putExtra("Steps", steps);
 		Send.setAction("hig.herd.NGAJ.RECEIVEDATA");
 		LocalBroadcastManager.getInstance(mContext).sendBroadcast(Send);
+		
 	}
 	
 	@Override
@@ -166,9 +191,9 @@ LocationListener
 
 	@SuppressWarnings("deprecation")
 	public int onStartCommand(Intent intent, int flags, int startId) {
-		// We want this service to continue running until it is explicitly
-		// stopped, so return sticky.
-		       super.onStart(intent, startId);
+		      super.onStart(intent, startId);
+		      state=1;
+		      getSharedPreferences("GPSServiceState",MODE_PRIVATE).edit().putInt("GPSServiceState",state).commit();
 		       int k = intent.getIntExtra("Key", 0);
 				if(k==1)
 				{
@@ -180,6 +205,9 @@ LocationListener
 	@Override
 	public void onLocationChanged(Location location) {
 		// TODO Auto-generated method stub
+		if(state!=2)
+		{
+		state = getSharedPreferences("GPSServiceState",MODE_PRIVATE).getInt("GPSServiceState",0);
 		Log.d("Location Changed: ","Latitude: "+Double.toString(location.getLatitude()));
 		Send.putExtra("Latitude", location.getLatitude());
 		Send.putExtra("Longitude", location.getLongitude());
@@ -213,12 +241,16 @@ LocationListener
 		Send.putExtra("SpeedExtras", strSpeedExtras);
 		Send.setAction("hig.herd.NGAJ.RECEIVEDATA");
 		
+				
 		LocalBroadcastManager.getInstance(mContext).sendBroadcast(Send);	
+	}
 	}
 
 	private void doTime() {
          //This method is called from timer when activated and it deals with timing, increases the value and shows on UI a proper format of time.
-             
+		state = getSharedPreferences("GPSServiceState",MODE_PRIVATE).getInt("GPSServiceState",0);
+		if(state!=2)
+		{
 		 time += 1;
          
          String result = "";
@@ -245,6 +277,7 @@ LocationListener
          }
          Send.putExtra("Time", result);
          LocalBroadcastManager.getInstance(mContext).sendBroadcast(Send);
+		}
  }
 
 	private void startTimer() {

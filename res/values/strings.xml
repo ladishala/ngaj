@@ -28,5 +28,6 @@
     <string name="Medal">Track Rank: Bronze (125 Points)</string>
     <string name="title_activity_level_up">LevelUp</string>
     <string name="LevelUp">Well Done! \nYou have raised one level up!\nYour current level is : 3 (Skilled)</string>
+    <string name="CameraLand">Ca</string>
 
 </resources>

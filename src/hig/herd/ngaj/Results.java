@@ -180,7 +180,7 @@ public class Results extends FragmentActivity {
 	private int calculateLevel(int score)
 	{
 		int result=1;
-		if(score>=10501)
+		if(score>=10500)
 		{
 			result=5;
 			mProgress.setMax(score);
@@ -188,27 +188,27 @@ public class Results extends FragmentActivity {
 			CurrentLevel.setImageResource(R.drawable.elite);
 			NextLevel.setImageResource(R.drawable.elite);
 		}
-		else if(score>=5751)
+		else if(score>=5750)
 		{
 			result=4;
-			mProgress.setMax(10500);
-			mProgress.setProgress(score);
+			mProgress.setMax(10500-5750);
+			mProgress.setProgress(score-5750);
 			CurrentLevel.setImageResource(R.drawable.four);
 			NextLevel.setImageResource(R.drawable.five);
 		}
-		else if(score>=2751)
+		else if(score>=2750)
 		{
 			result=3;
-			mProgress.setMax(5750);
-			mProgress.setProgress(score);
+			mProgress.setMax(5750-2750);
+			mProgress.setProgress(score-2750);
 			CurrentLevel.setImageResource(R.drawable.three);
 			NextLevel.setImageResource(R.drawable.four);
 		}
-		else if(score>=1001)
+		else if(score>=1000)
 		{
 			result=2;
-			mProgress.setMax(2750);
-			mProgress.setProgress(score);
+			mProgress.setMax(2750-1000);
+			mProgress.setProgress(score-1000);
 			CurrentLevel.setImageResource(R.drawable.two);
 			NextLevel.setImageResource(R.drawable.three);
 		}
