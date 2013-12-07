@@ -45,7 +45,6 @@
             android:exported="false" />
 
         <receiver android:name="hig.herd.ngaj.ReceiveData" >
-            
         </receiver>
 
         <activity
@@ -53,23 +52,24 @@
             android:label="@string/title_activity_results"
             android:screenOrientation="portrait" >
         </activity>
-        
         <activity
             android:name="hig.herd.ngaj.Stats"
             android:label="@string/title_activity_stats" >
         </activity>
-        
         <activity
             android:name="hig.herd.ngaj.Tracks"
             android:label="@string/title_activity_tracks" >
         </activity>
-
         <activity
             android:name="hig.herd.ngaj.LevelUp"
             android:label="@string/title_activity_level_up"
             android:screenOrientation="portrait" >
         </activity>
-        
+		<activity
+            android:name="hig.herd.ngaj.CalibratePedometer"
+            android:label="@string/title_activity_calibrate_pedometer"
+            android:screenOrientation="portrait" >
+        </activity>
         <meta-data
             android:name="com.google.android.maps.v2.API_KEY"
             android:value="AIzaSyCl4G8fmz8qIiMZKb2vfXFTF7VWswO5PWI" />

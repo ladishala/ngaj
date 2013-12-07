@@ -2,7 +2,7 @@
 <resources>
 
     <string name="app_name">NGAJ</string>
-    <string name="action_settings">Settings</string>
+    <string name="action_settings">Calibrate Pedometer</string>
     <string name="hello_world">Hello world!</string>
     <string name="title_activity_results">Results</string>
     <string name="time">Time</string>
@@ -29,5 +29,9 @@
     <string name="title_activity_level_up">LevelUp</string>
     <string name="LevelUp">Well Done! \nYou have raised one level up!\nYour current level is : 3 (Skilled)</string>
     <string name="CameraLand">Ca</string>
+    <string name="txtCalibration">Waiting to start . . .</string>
+    <string name="title_activity_calibrate_pedometer">CalibratePedometer</string>
+    <string name="Calibrate">To calibrate pedometer:\n   -Press Start Button\n   -Put phone in your pocket\n   -Wait for the beep sound\n   -Walk/Runn 10 steps\n   -Press Volume Up or Down button\n   -You will hear a confirmation beep sound\n   -Take phone from pocket\n   -See calibration result.</string>
+    <string name="btncalibrate">Start Calibration</string>
 
 </resources>

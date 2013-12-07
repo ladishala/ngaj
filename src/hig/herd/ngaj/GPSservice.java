@@ -63,8 +63,8 @@ LocationListener
     
     
 	int state =0;
-	//private double max=0;
-	//private double min=100;
+	private double downThreshold;
+	private double upThreshold;
 	Intent Send;
 	public GPSservice() {
 		super();
@@ -79,6 +79,8 @@ LocationListener
 		startTimer();
 		state=1;
 		getSharedPreferences("GPSServiceState",MODE_PRIVATE).edit().putInt("GPSServiceState",state).commit();
+		downThreshold=getSharedPreferences("downThreshold",MODE_PRIVATE).getFloat("downThreshold",2);
+		upThreshold = getSharedPreferences("upThreshold",MODE_PRIVATE).getFloat("upThreshold",8);
 	}
 	public void onStart()
 	{
@@ -151,7 +153,7 @@ LocationListener
 	}
 	private void checkforstep()
 	{
-		if(magnitude>8)
+		if(magnitude>upThreshold)
 		{
 			if(up && down)
 			{
@@ -166,7 +168,7 @@ LocationListener
 			down=false;
 			}
 		}
-		else if(magnitude<2)
+		else if(magnitude<downThreshold)
 		{
 			down=true;
 		}

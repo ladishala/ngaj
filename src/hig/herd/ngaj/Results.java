@@ -37,6 +37,7 @@ import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.support.v4.app.FragmentActivity;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -161,8 +162,20 @@ public class Results extends FragmentActivity {
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.results, menu);
+		getMenuInflater().inflate(R.menu.main, menu);
 		return true;
+	}
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+	    // Handle item selection
+	    if(item.getItemId()==R.id.action_settings)
+	    {
+	    	Intent i = new Intent(Results.this,CalibratePedometer.class);
+			startActivity(i);
+			
+	    }
+	    return true;
+	    
 	}
 	private void addScore()
 	{

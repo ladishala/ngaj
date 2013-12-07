@@ -1,0 +1,42 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context=".CalibratePedometer" >
+
+    <TextView
+        android:id="@+id/txtCalibrationInfo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:lines="10"
+        android:maxLines="10"
+        android:singleLine="false"
+        android:text="@string/Calibrate" />
+
+    <Button
+        android:id="@+id/btnCalibrate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:text="@string/btncalibrate"
+        android:onClick="startCalibration" />
+
+    <TextView
+        android:id="@+id/txtCalibrationResult"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/btnCalibrate"
+        android:layout_alignLeft="@+id/txtCalibrationInfo"
+        android:layout_alignParentRight="true"
+        android:layout_below="@+id/txtCalibrationInfo"
+        android:gravity="center"
+        android:text="@string/txtCalibration"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
+
+</RelativeLayout>

@@ -8,10 +8,12 @@ import java.util.TimeZone;
 
 
 import android.app.Activity;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.LinearLayout;
 
 import com.jjoe64.graphview.GraphView;
@@ -157,8 +159,20 @@ public class Stats extends Activity {
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.stats, menu);
+		getMenuInflater().inflate(R.menu.main, menu);
 		return true;
+	}
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+	    // Handle item selection
+	    if(item.getItemId()==R.id.action_settings)
+	    {
+	    	Intent i = new Intent(Stats.this,CalibratePedometer.class);
+			startActivity(i);
+			
+	    }
+	    return true;
+	    
 	}
 
 }
