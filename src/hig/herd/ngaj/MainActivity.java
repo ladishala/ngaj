@@ -131,14 +131,8 @@ public class MainActivity extends FragmentActivity {
 	        	serviceIntent.putExtra("Key", 1);
 	        	startService(serviceIntent);
 	        }
-	        /*else
-	        {
-	        serviceIntent.putExtra("Key", 5);
-	        }*/
 	        OrientationChange=false;
-	        k=1;
-	        
-	        	        
+	        k=1; 	        
 		}
 		else if(k==2)
 		{
@@ -220,6 +214,7 @@ public class MainActivity extends FragmentActivity {
 					txtSpeedExtras.setText("0 avg 0 max");
 					latLngList.clear();
                     mapView.clear();
+                    mapView.setMyLocationEnabled(false);
                     stopService(serviceIntent);
 					 
 				} catch (Exception ex) {
@@ -282,20 +277,20 @@ public class MainActivity extends FragmentActivity {
 	 // for performance issues we decided to trigger this checker to check every 5 seconds.
 	 timer = new Timer();
 	 timer.scheduleAtFixedRate(new TimerTask() {
-
+		 
 	    public void run() {
-	    	Log.d("Checking","Checking");
+	    	
 	       if(k==1 && getSharedPreferences("GPSServiceState",MODE_PRIVATE).getInt("GPSServiceState",0)==0)
 	        {
 	         serviceIntent.putExtra("Key", 1);
 	         startService(serviceIntent);
 	        }
-	       else if(k==0)
-	    	   {
+	        else if(k==0)
+	   	   {
 	    	   	timer.cancel();
+	   	   }
 	    	   }
-	    	   }
-	      }, 0, 5000);
+	      }, 5000, 5000);
 	}
 	public Object onRetainCustomNonConfigurationInstance()
 	{
@@ -355,7 +350,7 @@ public class MainActivity extends FragmentActivity {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
 			k=1;
-			startService(serviceIntent);
+			getSharedPreferences("GPSServiceState",MODE_PRIVATE).edit().putInt("GPSServiceState",1).commit();
 			mapView.setMyLocationEnabled(true);
 			}
 		});
@@ -390,6 +385,7 @@ public class MainActivity extends FragmentActivity {
 					
 					startResults(input.getText().toString());
 					stopService(serviceIntent);
+					mapView.setMyLocationEnabled(false);
 					
 					 
 				} catch (Exception ex) {
