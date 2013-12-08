@@ -43,8 +43,8 @@ LocationListener
 	private Context mContext;
 	private int NOTIFICATION_ID = 1984;
     private Timer timer;
-    private int time;
-    private float speed;
+    private int time=0;
+    private float speed=0;
     private float maxspeed=0;
     float avgSpeed=0;
     private float totaldistance=0;
@@ -72,38 +72,33 @@ LocationListener
 
 	public void onCreate()
 	{
-		getApplicationContext();
-		this.mContext=this.getApplicationContext();
-		declareListeners();
-		startServiceInForeground();
-		startTimer();
-		state=1;
-		getSharedPreferences("GPSServiceState",MODE_PRIVATE).edit().putInt("GPSServiceState",state).commit();
-		downThreshold=getSharedPreferences("downThreshold",MODE_PRIVATE).getFloat("downThreshold",2);
-		upThreshold = getSharedPreferences("upThreshold",MODE_PRIVATE).getFloat("upThreshold",8);
-	}
-	public void onStart()
-	{
+		  getApplicationContext();
+          this.mContext=this.getApplicationContext();
+          declareListeners();
+          startServiceInForeground();
+          startTimer();
+          state=1;
+          getSharedPreferences("GPSServiceState",MODE_PRIVATE).edit().putInt("GPSServiceState",state).commit();
+          downThreshold=getSharedPreferences("downThreshold",MODE_PRIVATE).getFloat("downThreshold",2);
+          upThreshold = getSharedPreferences("upThreshold",MODE_PRIVATE).getFloat("upThreshold",8);
 		
 	}
+
 	protected void declareListeners() {
 		// TODO Auto-generated method stub
-		
+			
 		mSensorManager = (SensorManager)mContext.getSystemService(Context.SENSOR_SERVICE);
-		mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
-		mSensorManager.registerListener(this, mAccelerometer,SensorManager.SENSOR_DELAY_UI);
+        mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
+        mSensorManager.registerListener(this, mAccelerometer,SensorManager.SENSOR_DELAY_UI);
+        
+        
+        mLocationManager = (LocationManager)mContext.getSystemService(LOCATION_SERVICE);
+        mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,5000,10,this);
+        
+        
+        Send = new Intent();
+        Send.setAction("hig.herd.NGAJ.RECEIVEDATA");
 		
-		
-		mLocationManager = (LocationManager)mContext.getSystemService(LOCATION_SERVICE);
-		mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,5000,10,this);
-		
-		
-		Send = new Intent();
-		Send.putExtra("Steps", 0);
-		Send.putExtra("Speed", "0");
-		Send.putExtra("Distance", "0.00");
-		Send.setAction("hig.herd.NGAJ.RECEIVEDATA");
-		LocalBroadcastManager.getInstance(mContext).sendBroadcast(Send);
 	}
 	public void onDestroy()
 	{
@@ -133,16 +128,6 @@ LocationListener
 			magnitude=Math.sqrt(x*x+y*y+z*z);
 
 			
-			/*if(magnitude<=min)
-			{
-				min=magnitude;
-				//Log.d("Last min=",Double.toString(min));
-			}
-			if(magnitude>=max)
-			{
-				max=magnitude;
-				//Log.d("Last max=",Double.toString(max));
-			}*/
 			state = getSharedPreferences("GPSServiceState",MODE_PRIVATE).getInt("GPSServiceState",0);
 			if(state!=2)
 			{
@@ -202,6 +187,23 @@ LocationListener
 					getPreferences();
 				
 				}
+				
+				Send.putExtra("Steps", steps);
+				Send.putExtra("Speed", new DecimalFormat("#.##").format((double) (speed)).toString());
+				avgSpeed = totaldistance*3600/Float.parseFloat(Integer.toString(time));
+				String strAvgSpeed = new DecimalFormat("#.##").format(
+		                (double) (avgSpeed)).toString();
+				if(strAvgSpeed=="NaN")
+				{
+					strAvgSpeed="0.00";
+				}
+				String strMaxSpeed = new DecimalFormat("#.##").format(
+		                (double) (maxspeed)).toString();
+				String strSpeedExtras = strAvgSpeed+" avg "+strMaxSpeed+" max";
+				Send.putExtra("SpeedExtras",strSpeedExtras);
+				Send.putExtra("Distance", new DecimalFormat("#.##").format((double) (totaldistance)).toString());
+				LocalBroadcastManager.getInstance(mContext).sendBroadcast(Send);
+				
 		       return  startId;
 	}
 	@Override
@@ -284,7 +286,7 @@ LocationListener
 
 	private void startTimer() {
         //This method starts timer when in record mode this timer calls method dotime every second.
-        timer = new Timer();
+		timer = new Timer();
         timer.scheduleAtFixedRate(new TimerTask() {
 
                 public void run() {
