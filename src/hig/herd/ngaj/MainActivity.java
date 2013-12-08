@@ -395,7 +395,7 @@ public class MainActivity extends FragmentActivity {
 			public void onClick(DialogInterface dialog, int which) {
 				
 				try {
-					
+					k=0;
 					startResults(input.getText().toString());
 					stopService(serviceIntent);
 					mapView.setMyLocationEnabled(false);
