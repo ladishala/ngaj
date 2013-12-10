@@ -118,7 +118,7 @@
             android:layout_marginRight="2dp"
             android:layout_marginTop="2dp"
             android:layout_weight="1"
-            android:background="#C0C0C0"
+            android:background="@drawable/bar_gradient"
             android:orientation="vertical" >
 
             <TextView
@@ -151,7 +151,7 @@
             android:layout_marginLeft="2dp"
             android:layout_marginTop="2dp"
             android:layout_weight="1"
-            android:background="#C0C0C0"
+            android:background="@drawable/bar_gradient"
             android:gravity="center"
             android:orientation="vertical" >
 
@@ -188,7 +188,7 @@
             android:layout_marginRight="2dp"
             android:layout_marginTop="2dp"
             android:layout_weight="1"
-            android:background="#C0C0C0"
+            android:background="@drawable/bar_gradient"
             android:orientation="vertical" >
 
             <TextView
@@ -214,7 +214,7 @@
             android:layout_marginLeft="2dp"
             android:layout_marginTop="2dp"
             android:layout_weight="1"
-            android:background="#C0C0C0"
+            android:background="@drawable/bar_gradient"
             android:orientation="vertical" >
 
             <TextView

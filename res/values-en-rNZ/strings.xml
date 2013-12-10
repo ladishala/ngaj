@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">NGAJ</string>
+    <string name="action_settings">Kalibro Pedometrin</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="title_activity_results">Rezultatet</string>
+    <string name="time">Koha</string>
+    <string name="startTime">00:00:00</string>
+    <string name="timeFormat">hh:mm:ss</string>
+    <string name="Steps">Gjithsejt hapa: 0</string>
+    <string name="distance">Distanca (Km)</string>
+    <string name="startDistance">0.00</string>
+    <string name="distanceFormat">Km</string>
+    <string name="speed">Shpejtesia(km/h)</string>
+    <string name="startSpeed">00.0</string>
+    <string name="speedFormat">0.00 avg 0.00 max</string>
+    <string name="steps">Hapa:</string>
+    <string name="startSteps">0</string>
+    <string name="Start">Nisu</string>
+    <string name="Camera">Kamera</string>
+    <string name="ViewStats">Stats</string>
+    <string name="ViewTracks">Shtigjet</string>
+    <string name="Text">Urime! Ju keni perfunduar kete sesion.</string>
+    <string name="title_activity_stats">Stats</string>
+    <string name="title_activity_tracks">Shtigjet</string>
+    <string name="Image">Pershkrimi i fotos</string>
+    <string name="Medal">Vleresimi i shtegut: Bronze (125 Pike)</string>
+    <string name="title_activity_level_up">LevelUp</string>
+    <string name="LevelUp">Urime! \nJu keni arritur nje nivel me lart!\nNiveli juaj eshte : 3(Skilled)</string>
+    <string name="CameraLand">Ca</string>
+    <string name="txtCalibration">Duke pritur . . .</string>
+    <string name="title_activity_calibrate_pedometer">KalibroPedometrin</string>
+    <string name="Calibrate">Per ta kalibrauar pedometrin:\n   -Prekni butonin Start\n   -Fute telefonin ne gjep\n   -Prit per beep signalin\n   -Ec/Vrapo 10 hapa\n   -Prekni butonin Volume Up ose Down\n   -Do ta degjoni nje tingull konfirmimi\n   -Nxerre telefonin nga gjepi\n   -Shiko rrezultatin e kalibrimit.</string>
+    <string name="btncalibrate">Starto kalibrimin</string>
+
+</resources>

@@ -3,6 +3,7 @@ package hig.herd.ngaj;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 
 
@@ -123,8 +124,19 @@ public class Tracks extends Activity {
                     		listIDs.add(cr1.getInt(cr1.getColumnIndex("ID")));
                     		listItems.add(cr1.getString(cr1.getColumnIndex("Name")));
                     		String Extras="Time: ";
+                    		if(Locale.getDefault().getDisplayName().equals("English (New Zealand)"))
+                    		{
+                    			Extras="Koha: ";
+                    		}
                     		Extras+=cr1.getString(cr1.getColumnIndex("Time"));
-                    		Extras+=" Distance: ";
+                    		if(Locale.getDefault().getDisplayName().equals("English (New Zealand)"))
+                    		{
+                    			Extras+=" Distanca: ";
+                    		}
+                    		else
+                    		{
+                    			Extras+=" Distance: ";
+                    		}
                     		Extras+=cr1.getString(cr1.getColumnIndex("Distance"));
                     		Extras+=" km";
                     		listItemExtras.add(Extras);
@@ -142,9 +154,20 @@ public class Tracks extends Activity {
 	private void showRemoveAlert(final int arg)
 	{
 		Alert = new AlertDialog.Builder(this);
-		Alert.setTitle("Confirm Delete!");
-		Alert.setMessage("Are you sure you want to delete track '"+listItems.get(arg)+"'?");
-		Alert.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+		String strTitle="Confirm Delete!";
+		String strMessage="Are you sure you want to delete track '"+listItems.get(arg)+"'?";
+		String strPositive="Yes";
+		String strNegative="Cancel";
+		if(Locale.getDefault().getDisplayName().equals("English (New Zealand)"))
+		{
+			strTitle="Konfirmo fshirjen!";
+			strMessage = "A deshironi ta fshini shtegun '"+listItems.get(arg)+"'?";
+			strPositive="Po";
+			strNegative="Jo";
+		}
+		Alert.setTitle(strTitle);
+		Alert.setMessage(strMessage);
+		Alert.setPositiveButton(strPositive, new DialogInterface.OnClickListener() {
 			
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
@@ -162,7 +185,7 @@ public class Tracks extends Activity {
 				
 			}
 		});
-		Alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+		Alert.setNegativeButton(strNegative, new DialogInterface.OnClickListener() {
 			
 			@Override
 			public void onClick(DialogInterface dialog, int which) {

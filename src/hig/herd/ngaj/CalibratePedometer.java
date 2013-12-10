@@ -1,6 +1,7 @@
 package hig.herd.ngaj;
 
 import java.util.ArrayList;
+import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -13,7 +14,6 @@ import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.app.Activity;
 import android.content.Context;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.View;
@@ -59,11 +59,25 @@ SensorEventListener{
 			{
 			magnitudes.clear();
 			startTimer();
-			btnCalibration.setText("Stop Calibration");
+				if (Locale.getDefault().getDisplayName().equals("English (New Zealand)")) 
+				{
+					btnCalibration.setText("Ndale Kalibrimin");
+	  	    	}
+				else
+				{
+					btnCalibration.setText("Stop Calibration");
+				}
 			}
 			else
 			{
-				Toast.makeText(this, "App should be in stopped state to calibrate!", Toast.LENGTH_LONG).show();
+				if (Locale.getDefault().getDisplayName().equals("English (New Zealand)")) 
+				{
+				   Toast.makeText(this, "Aplikacioni nuk duhet te jete jo aktiv per te kalibruar!", Toast.LENGTH_LONG).show();
+				}
+				else
+				{
+					Toast.makeText(this, "App should be in stopped state to calibrate!", Toast.LENGTH_LONG).show();
+				}
 			}
 		}
 		else
@@ -76,8 +90,15 @@ SensorEventListener{
 	public void stopCollecting()
 	{
 		MediaPlayer mp = MediaPlayer.create(CalibratePedometer.this, R.raw.beep);  
-  	  mp.start();
-		btnCalibration.setText("Start Calibration");
+  	    mp.start();
+  	    if (Locale.getDefault().getDisplayName().equals("English (New Zealand)")) 
+  	    {
+  	    	btnCalibration.setText("Starto Kalibrimin");
+  	    }
+  	    else
+  	    {
+  	    	btnCalibration.setText("Start Calibration");
+  	    }
 		mTimer.cancel();
 		Time=6;
 		calibrating=false;
@@ -115,7 +136,6 @@ SensorEventListener{
 		double downThreshold=minMagnitude();
 		double upThreshold=maxMagnitude();
 		boolean calibrated=false;
-		Log.d("Calibrating","Calibrating Down: "+Double.toString(downThreshold)+" UP: "+Double.toString(upThreshold));
 		while(upThreshold>downThreshold)
 		{
 			int steps=0;
@@ -147,11 +167,26 @@ SensorEventListener{
 		}
 		if(calibrated)
 		{
-			txtCalibrationResult.setText("Successufully calibrated!");
+			if (Locale.getDefault().getDisplayName().equals("English (New Zealand)")) 
+			{
+				txtCalibrationResult.setText("U kalibrua me sukses!");
+			}
+			else
+			{
+				txtCalibrationResult.setText("Successufully calibrated!");
+			}
+			
 		}
 		else
 		{
-			txtCalibrationResult.setText("Calibration failed.\nPlease try again");
+			if (Locale.getDefault().getDisplayName().equals("English (New Zealand)")) 
+			{
+				txtCalibrationResult.setText("Kalibrimi Deshtoi.\nProvoni perseri");
+			}
+			else
+			{
+				txtCalibrationResult.setText("Calibration failed.\nPlease try again");
+			}
 		}
 		
 		
@@ -231,7 +266,15 @@ SensorEventListener{
 	             }
 	             else
 	             {
-	             	txtCalibrationResult.setText("Calibrating");
+	            	 if (Locale.getDefault().getDisplayName().equals("English (New Zealand)")) 
+	     			 {
+	            		 txtCalibrationResult.setText("Duke Kalibruar");
+	     			 }
+	            	 else
+	            	 {
+	            		 txtCalibrationResult.setText("Calibrating"); 
+	            	 }
+	             	
 	             	calibrating=true;
 	             }
 	            if(Time==0)

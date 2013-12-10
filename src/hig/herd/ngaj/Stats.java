@@ -4,6 +4,7 @@ package hig.herd.ngaj;
 import java.text.DecimalFormat;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Locale;
 import java.util.TimeZone;
 
 
@@ -80,8 +81,15 @@ public class Stats extends Activity {
 		
      		LinearLayout layout1 = (LinearLayout) findViewById(R.id.graph2);  
      		LinearLayout layout2=(LinearLayout) findViewById(R.id.graph1); 
-     		DrawGraphs(layout1,values1,"Total Distance(Km)");
-     		DrawGraphs(layout2,values2,"Total Steps");
+     		String strGraph1="Total Discance(Km)";
+     		String strGraph2="Total Steps";
+     		if (Locale.getDefault().getDisplayName().equals("English (New Zealand)")) 
+			{
+     			strGraph1="Gjithsejt Distanca(Km)";
+     			strGraph2="Gjithsejt Hapa";
+			}
+     		DrawGraphs(layout1,values1,strGraph1);
+     		DrawGraphs(layout2,values2,strGraph2);
 	}
 	
 	private void decreaseDate()

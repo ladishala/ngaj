@@ -6,6 +6,7 @@ package hig.herd.ngaj;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
+import java.util.Locale;
 
 
 import org.brickred.socialauth.android.DialogListener;
@@ -120,7 +121,7 @@ public class Results extends FragmentActivity {
 		
 		
 		bar = (LinearLayout) findViewById(R.id.linearbar2);
-		bar.setBackgroundResource(R.drawable.bar_gradient);
+		//bar.setBackgroundResource(R.drawable.bar_gradient);
 
 		adapter = new SocialAuthAdapter(new ResponseListener());
 
@@ -256,22 +257,53 @@ public class Results extends FragmentActivity {
 		if(Distance>=10 && avgSpeed>=15)
 		{
 			result = 500;
-			helloworld.setText("Track Rank: Gold (500 Points)");
+			if (Locale.getDefault().getDisplayName().equals("English (New Zealand)")) 
+			{
+				helloworld.setText("Vleresimi i shtegut: Gold \n(500 Pike)");
+			} 	
+			else 
+			{   
+				helloworld.setText("Track Rank: Gold (500 Points)");
+        	}
 		}
 		else if(Distance>=5 && avgSpeed>=10)
 		{
 			result = 250;
-			helloworld.setText("Track Rank: Silver (250 Points)");
+			if (Locale.getDefault().getDisplayName().equals("English (New Zealand)")) 
+			{
+				helloworld.setText("Vleresimi i shtegut: Silver \n(250 Pike)");
+			} 	
+			else 
+			{   
+				helloworld.setText("Track Rank: Silver (250 Points)");
+        	}
+			
 		}
 		else if(Distance>=3 && avgSpeed>=5)
 		{
 			result = 125;
-			helloworld.setText("Track Rank: Bronze (125 Points)");
+			if (Locale.getDefault().getDisplayName().equals("English (New Zealand)")) 
+			{
+				helloworld.setText("Vleresimi i shtegut: Bronze \n(125 Pike)");
+			} 	
+			else 
+			{   
+				helloworld.setText("Track Rank: Bronze (125 Points)");
+        	}
+			
 		}
 		else
 		{
 			result = 0;
-			helloworld.setText("Track Rank: No Medal (0 Points)");			
+			if (Locale.getDefault().getDisplayName().equals("English (New Zealand)")) 
+			{
+				helloworld.setText("Vleresimi i shtegut: Pa Medalje \n(0 Pike)");
+			} 	
+			else 
+			{   
+				helloworld.setText("Track Rank: No Medal (0 Points)");
+        	}
+						
 		}
 		return result;
 		
@@ -290,6 +322,7 @@ public class Results extends FragmentActivity {
 	            public void onSnapshotReady(Bitmap snapshot) {
 	                try {
 	                    view.setDrawingCacheEnabled(true);
+	                    
 	                    Bitmap backBitmap = view.getDrawingCache();
 	                    Bitmap bmOverlay = Bitmap.createBitmap(
 	                            backBitmap.getWidth(), backBitmap.getHeight(),
@@ -303,6 +336,7 @@ public class Results extends FragmentActivity {
 	                    
 	                   FileOutputStream out = new FileOutputStream(Filename);
 	                    bmOverlay.compress(Bitmap.CompressFormat.PNG, 90, out);
+                    
 	                } catch (Exception e) {
 	                    e.printStackTrace();
 	                }
@@ -328,15 +362,30 @@ public class Results extends FragmentActivity {
 	private void showalert(String arg)
 	{
 		Alert = new AlertDialog.Builder(this);
-		Alert.setTitle("Confirm Share!");
-		Alert.setMessage("Are you sure you want to share your results on "+arg+"?");
-		Alert.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+		String strTitle = "Confirm Share!";
+		String strMessage = "Are you sure you want to share your results on "+arg+"?";
+		String strPositive = "Yes";
+		String strNegative="Cancel";
+		if(Locale.getDefault().getDisplayName().equals("English (New Zealand)"))
+		{
+			strTitle="Konfirmo shperndarjen!";
+			strMessage = "A deshironi ta shperndani rezultatin ne "+arg+"?";
+			strPositive="Po";
+			strNegative="Jo";
+		}
+		Alert.setTitle(strTitle);
+		Alert.setMessage(strMessage);
+		Alert.setPositiveButton(strPositive, new DialogInterface.OnClickListener() {
 			
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
 				
 				try {
 					String Message = "I have ran "+txtDistance.getText()+" km with NGAJ. \nHere are my stats.";
+					if(Locale.getDefault().getDisplayName().equals("English (New Zealand)"))
+					{
+						Message="Une kam vrapuar "+txtDistance.getText()+" km me NGAJ. \nKeto jane rezultatet e mia.";
+					}
 					
 					adapter.uploadImageAsync(Message, "Name.png",screenShot(Layout1), 0, new MessageListener());
 				} catch (Exception ex) {
@@ -346,7 +395,7 @@ public class Results extends FragmentActivity {
 				
 			}
 		});
-		Alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+		Alert.setNegativeButton(strNegative, new DialogInterface.OnClickListener() {
 			
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
@@ -442,20 +491,44 @@ public class Results extends FragmentActivity {
 			Integer status = t;
 			if (status.intValue() == 200 || status.intValue() == 201
 					|| status.intValue() == 204)
-				Toast.makeText(Results.this,
+				
+			{
+				if (Locale.getDefault().getDisplayName().equals("English (New Zealand)")) 
+				{
+					Toast.makeText(Results.this,
+						"Messazhi u postua ne " + provider, Toast.LENGTH_LONG)
+						.show();
+				} 
+				else
+				{
+					Toast.makeText(Results.this,
 						"Message posted on " + provider, Toast.LENGTH_LONG)
 						.show();
-			else
-				Toast.makeText(Results.this,
-						"Message not posted on" + provider, Toast.LENGTH_LONG)
-						.show();
 				}
+			}	
+			else{
+				if (Locale.getDefault().getDisplayName().equals("English (New Zealand)")) 
+				{
+					Toast.makeText(Results.this,
+						"Messazhi nuk u postua ne " + provider, Toast.LENGTH_LONG)
+						.show();
+				} 
+				else
+				{
+					Toast.makeText(Results.this,
+							"Message not posted on" + provider, Toast.LENGTH_LONG)
+							.show();
+				}
+			
+				
+			}
+		}
 
 		@Override
-		public void onError(SocialAuthError e) {
-
+		public void onError(SocialAuthError arg0) {
+			// TODO Auto-generated method stub
+			
 		}
+
 	}
-
-
 }

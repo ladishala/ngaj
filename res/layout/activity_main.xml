@@ -59,7 +59,7 @@
             android:layout_height="wrap_content"
             android:layout_marginRight="2dp"
             android:layout_marginTop="2dp"
-            android:background="#C0C0C0"
+           android:background="@drawable/bar_gradient"
             android:orientation="vertical" >
 
              <TextView
@@ -92,7 +92,7 @@
             android:layout_height="match_parent"
             android:layout_marginLeft="2dp"
             android:layout_marginTop="2dp"
-            android:background="#C0C0C0"
+            android:background="@drawable/bar_gradient"
             android:gravity="center"
             android:orientation="vertical" >
 
@@ -132,7 +132,7 @@
             android:layout_marginRight="2dp"
             android:layout_marginTop="2dp"
             android:orientation="vertical"
-            android:background="#C0C0C0" >
+            android:background="@drawable/bar_gradient" >
 
             <TextView
                 android:id="@+id/time1"
@@ -157,7 +157,7 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="2dp"
             android:layout_marginTop="2dp"
-            android:background="#C0C0C0"
+            android:background="@drawable/bar_gradient"
             android:orientation="vertical" >
 
             <TextView

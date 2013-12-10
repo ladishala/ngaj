@@ -1,6 +1,7 @@
 package hig.herd.ngaj;
 
 import java.util.ArrayList;
+import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -20,7 +21,6 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.LocalBroadcastManager;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -29,6 +29,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+
 
 public class MainActivity extends FragmentActivity {
 
@@ -70,6 +71,7 @@ public class MainActivity extends FragmentActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+		
 		txtSteps = (TextView)findViewById(R.id.steps2);	
 		txtSpeed = (TextView)findViewById(R.id.speed2);
 		txtSpeedExtras=(TextView)findViewById(R.id.speed3);
@@ -134,7 +136,12 @@ public class MainActivity extends FragmentActivity {
 		
 		if(k==1 || (k==2 && OrientationChange))
 		{
+			
 			btnStart.setText("Pause");
+			if(Locale.getDefault().getDisplayName().equals("English (New Zealand)"))
+			{
+	        	btnStart.setText("Pauzo");
+			}
 			mapView.setMyLocationEnabled(true);
 	        IntentFilter intentFilter = new IntentFilter("hig.herd.NGAJ.RECEIVEDATA");
 	        LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(this.ReceiveData ,intentFilter);   
@@ -151,10 +158,18 @@ public class MainActivity extends FragmentActivity {
 		{
 			showResumeAlert();
 			btnStart.setText("Pause");
+			if(Locale.getDefault().getDisplayName().equals("English (New Zealand)"))
+			{
+	        	btnStart.setText("Pauzo");
+			}
 		}
 		else
 		{
 			btnStart.setText("Start");
+			if(Locale.getDefault().getDisplayName().equals("English (New Zealand)"))
+			{
+	        	btnStart.setText("Nisu");
+			}
 			txtTime.setText("00:00:00");
 			txtSpeed.setText("0.00");
 			txtDistance.setText("0.00");
@@ -167,9 +182,20 @@ public class MainActivity extends FragmentActivity {
 	private void showResumeAlert()
 	{
 		Alert = new AlertDialog.Builder(this);
-		Alert.setTitle("Continue Work!");
-		Alert.setMessage("Do you want to continue your previous workout?");
-		Alert.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+		String strTitle="Continue Work!";
+		String strMessage="Do you want to continue your previous workout?";
+		String strPositive="Yes";
+		String strNegative="Cancel";
+		if(Locale.getDefault().getDisplayName().equals("English(New Zealand)"))
+		{
+			strTitle="Vazhdo punen!";
+			strMessage = "A deshironi ta vazhdoni sesionin tuaj te paperfunduar";
+			strPositive="Po";
+			strNegative="Jo";
+		}
+		Alert.setTitle(strTitle);
+		Alert.setMessage(strMessage);
+		Alert.setPositiveButton(strPositive, new DialogInterface.OnClickListener() {
 			
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
@@ -189,12 +215,16 @@ public class MainActivity extends FragmentActivity {
 				
 			}
 		});
-		Alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+		Alert.setNegativeButton(strNegative, new DialogInterface.OnClickListener() {
 			
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
 			k=0;	
 			btnStart.setText("Start");
+			if(Locale.getDefault().getDisplayName().equals("English (New Zealand)"))
+			{
+	        	btnStart.setText("Nisu");
+			}
 			txtTime.setText("00:00:00");
 			txtSpeed.setText("0.00");
 			txtDistance.setText("0.00");
@@ -210,9 +240,20 @@ public class MainActivity extends FragmentActivity {
 	private void showDiscardAlert()
 	{
 		Alert = new AlertDialog.Builder(this);
-		Alert.setTitle("Discard Work!");
-		Alert.setMessage("Do you want to discard your current work?\nThis cannot be undone!");
-		Alert.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+		String strTitle="Discard Work!";
+		String strMessage="Do you want to discard your current work?\nThis cannot be undone!";
+		String strPositive="Yes";
+		String strNegative="Cancel";
+		if(Locale.getDefault().getDisplayName().equals("English (New Zealand)"))
+		{
+			strTitle="Fshije punen!";
+			strMessage = "A deshironi ta fshini sesionin aktual?\nKy verpim nuk mund te zhbehet";
+			strPositive="Po";
+			strNegative="Jo";
+		}
+		Alert.setTitle(strTitle);
+		Alert.setMessage(strMessage);
+		Alert.setPositiveButton(strPositive, new DialogInterface.OnClickListener() {
 			
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
@@ -220,6 +261,10 @@ public class MainActivity extends FragmentActivity {
 				try {
 					k=0;	
 					btnStart.setText("Start");
+					if(Locale.getDefault().getDisplayName().equals("English (New Zealand)"))
+					{
+			        	btnStart.setText("Nisu");
+					}
 					txtTime.setText("00:00:00");
 					txtSpeed.setText("0.00");
 					txtDistance.setText("0.00");
@@ -237,7 +282,7 @@ public class MainActivity extends FragmentActivity {
 				
 			}
 		});
-		Alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+		Alert.setNegativeButton(strNegative, new DialogInterface.OnClickListener() {
 			
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
@@ -268,7 +313,12 @@ public class MainActivity extends FragmentActivity {
         startService(serviceIntent);
         
         //Change button text
+        
         btnStart.setText("Pause");
+        if(Locale.getDefault().getDisplayName().equals("English (New Zealand)"))
+		{
+        	btnStart.setText("Pauzo");
+		}
         k=1;
         serviceChecker();
         latLngList.clear();
@@ -341,9 +391,22 @@ public class MainActivity extends FragmentActivity {
 	private void showPauseAlert()
 	{
 		Alert = new AlertDialog.Builder(this);
-		Alert.setTitle("Workout Paused!");
-		Alert.setMessage("What you want to do?");
-		Alert.setPositiveButton("Save", new DialogInterface.OnClickListener() {
+		String strTitle="Workout Paused!";
+		String strMessage="What you want to do?";
+		String strPositive="Save";
+		String strNegative="Resume";
+		String strNeutral="Discard";
+		if(Locale.getDefault().getDisplayName().equals("English (New Zealand)"))
+		{
+			strTitle="Puna u pauzua!";
+			strMessage = "Ju lutem zgjedhni nje veprim?";
+			strPositive="Ruaje";
+			strNegative="Vazhdo";
+			strNeutral="Fshije";
+		}
+		Alert.setTitle(strTitle);
+		Alert.setMessage(strMessage);
+		Alert.setPositiveButton(strPositive, new DialogInterface.OnClickListener() {
 			
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
@@ -358,7 +421,7 @@ public class MainActivity extends FragmentActivity {
 				
 			}
 		});
-		Alert.setNegativeButton("Resume", new DialogInterface.OnClickListener() {
+		Alert.setNegativeButton(strNegative, new DialogInterface.OnClickListener() {
 			
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
@@ -367,7 +430,7 @@ public class MainActivity extends FragmentActivity {
 			mapView.setMyLocationEnabled(true);
 			}
 		});
-		Alert.setNeutralButton("Discard", new DialogInterface.OnClickListener() {
+		Alert.setNeutralButton(strNeutral, new DialogInterface.OnClickListener() {
 			
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
@@ -382,14 +445,25 @@ public class MainActivity extends FragmentActivity {
 	private void showNameTrackAlert()
 	{
 		Alert = new AlertDialog.Builder(this);
-		Alert.setTitle("Name Track");
-		Alert.setMessage("Give a name to your track.");
+		String strTitle="Name Track!";
+		String strMessage="Give a name to your track.";
+		String strPositive="Save";
+		String strNegative="Cancel";
+		if(Locale.getDefault().getDisplayName().equals("English (New Zealand)"))
+		{
+			strTitle="Emero Shtegun!";
+			strMessage = "Ju lutem emeroni shtegun.";
+			strPositive="Ruaje";
+			strNegative="Anulo";
+		}
+		Alert.setTitle(strTitle);
+		Alert.setMessage(strMessage);
 		// Set an EditText view to get user input 
 		final EditText input = new EditText(this);
 		input.setSingleLine(true);
 	
 		Alert.setView(input);
-		Alert.setPositiveButton("Save", new DialogInterface.OnClickListener() {
+		Alert.setPositiveButton(strPositive, new DialogInterface.OnClickListener() {
 			
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
@@ -408,7 +482,7 @@ public class MainActivity extends FragmentActivity {
 				
 			}
 		});
-		Alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+		Alert.setNegativeButton(strNegative, new DialogInterface.OnClickListener() {
 			
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
@@ -560,7 +634,6 @@ public class MainActivity extends FragmentActivity {
 			txtDistance.setText(Distance);
 			txtSpeed.setText(Speed);
 			txtSpeedExtras.setText(SpeedExtras);
-			Log.d("BroadCast Recieveri","I Got The message From Service: "+Integer.toString(Steps)+" Latitude: "+Double.toString(Latitude)+" Longitude: "+Double.toString(Longitude));
 		}
 	};
 

@@ -176,7 +176,7 @@
                 android:layout_marginLeft="2dp"
                 android:layout_marginTop="2dp"
                 android:layout_weight="1"
-               android:background="@drawable/bar_gradient"
+                android:background="@drawable/bar_gradient"
                 android:gravity="center"
                 android:orientation="vertical" >
 

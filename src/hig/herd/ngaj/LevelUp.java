@@ -3,6 +3,7 @@ package hig.herd.ngaj;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.util.Locale;
 
 
 import org.brickred.socialauth.android.DialogListener;
@@ -56,7 +57,7 @@ public class LevelUp extends Activity {
 		Level = i.getIntExtra("Level", 0);
 		
 		bar = (LinearLayout) findViewById(R.id.linearbar3);
-		bar.setBackgroundResource(R.drawable.bar_gradient);
+		
 		Layout1=(RelativeLayout)findViewById(R.id.Layout3);
 		txtLevel=(TextView)findViewById(R.id.txtLevelUp);
 		
@@ -81,22 +82,33 @@ public class LevelUp extends Activity {
 	
 	private void calculateText()
 	{
+		String strResult="";
+		
+		if (Locale.getDefault().getDisplayName().equals("English (New Zealand)")) 
+		{
+			strResult ="Urime! \nJu keni arritur nje nivel me lart!\nNiveli juaj eshte :";
+		} 	
+		else 
+		{   
+			strResult ="Well Done! \nYou have reached maximum level!\nYour current level is :";
+    	}
 		if(Level==5)
 		{
-			txtLevel.setText("Well Done! \nYou have reached maximum level!\nYour current level is : 5 (Elite)");
+			strResult+=" 5 (Elite)";		
 		}
 		else if(Level==4)
 		{
-			txtLevel.setText("Well Done! \nYou have raised one level up!\nYour current level is : 4 (Expert)");
+			strResult+=" 4 (Expert)";
 		}
 		else if(Level==3)
 		{
-			txtLevel.setText("Well Done! \nYou have raised one level up!\nYour current level is : 3 (Skilled)");
+			strResult+=" 3 (Skilled)";
 		}
 		else if(Level==2)
 		{
-			txtLevel.setText("Well Done! \nYou have raised one level up!\nYour current level is : 2 (Competent)");
+			strResult+=" 2 (Competent)";
 		}
+		txtLevel.setText(strResult); 
 	}
 	
 	/**
@@ -132,9 +144,20 @@ public class LevelUp extends Activity {
 	private void showalert(String arg)
 	{
 		Alert = new AlertDialog.Builder(this);
-		Alert.setTitle("Confirm Share!");
-		Alert.setMessage("Are you sure you want to share your results on "+arg+"?");
-		Alert.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+		String strTitle = "Confirm Share!";
+		String strMessage = "Are you sure you want to share your results on "+arg+"?";
+		String strPositive = "Yes";
+		String strNegative="Cancel";
+		if(Locale.getDefault().getDisplayName().equals("English (New Zealand)"))
+		{
+			strTitle="Konfirmo shperndarjen!";
+			strMessage = "A deshironi ta shperndani rezultatin ne "+arg+"?";
+			strPositive="Po";
+			strNegative="Jo";
+		}
+		Alert.setTitle(strTitle);
+		Alert.setMessage(strMessage);
+		Alert.setPositiveButton(strPositive, new DialogInterface.OnClickListener() {
 			
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
@@ -142,7 +165,10 @@ public class LevelUp extends Activity {
 				try {
 					int start = txtLevel.getText().toString().indexOf(":");
 					String Message = "I have raised one level up on NGAJ.\n"+"My Level is"+txtLevel.getText().toString().substring(start);
-					
+					if (Locale.getDefault().getDisplayName().equals("English (New Zealand)")) 
+					{
+						Message ="Kam arritur nje nivel me lart ne NGAJ.\nNiveli im eshte :"+txtLevel.getText().toString().substring(start);
+					} 	
 					adapter.uploadImageAsync(Message, "Name.png",screenShot(Layout1), 0, new MessageListener());
 				} catch (Exception ex) {
 					// TODO Auto-generated catch block
@@ -151,7 +177,7 @@ public class LevelUp extends Activity {
 				
 			}
 		});
-		Alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+		Alert.setNegativeButton(strNegative, new DialogInterface.OnClickListener() {
 			
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
@@ -247,14 +273,38 @@ public class LevelUp extends Activity {
 			Integer status = t;
 			if (status.intValue() == 200 || status.intValue() == 201
 					|| status.intValue() == 204)
-				Toast.makeText(LevelUp.this,
+				
+			{
+				if (Locale.getDefault().getDisplayName().equals("English (New Zealand)")) 
+				{
+					Toast.makeText(LevelUp.this,
+						"Messazhi u postua ne " + provider, Toast.LENGTH_LONG)
+						.show();
+				} 
+				else
+				{
+					Toast.makeText(LevelUp.this,
 						"Message posted on " + provider, Toast.LENGTH_LONG)
 						.show();
-			else
-				Toast.makeText(LevelUp.this,
-						"Message not posted on" + provider, Toast.LENGTH_LONG)
-						.show();
 				}
+			}	
+			else{
+				if (Locale.getDefault().getDisplayName().equals("English (New Zealand)")) 
+				{
+					Toast.makeText(LevelUp.this,
+						"Messazhi nuk u postua ne " + provider, Toast.LENGTH_LONG)
+						.show();
+				} 
+				else
+				{
+					Toast.makeText(LevelUp.this,
+							"Message not posted on" + provider, Toast.LENGTH_LONG)
+							.show();
+				}
+			
+				
+			}
+		}
 
 		@Override
 		public void onError(SocialAuthError e) {

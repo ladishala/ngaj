@@ -24,7 +24,8 @@
            android:layout_alignParentRight="true"
            android:gravity="center|left"
            android:text="@string/LevelUp"
-           android:textSize="20sp" />
+           android:textSize="20sp"
+           android:textColor="#000080" />
 
        <ImageView
            android:id="@+id/imgLevelUp"
