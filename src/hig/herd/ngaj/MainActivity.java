@@ -18,6 +18,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.LocalBroadcastManager;
@@ -25,6 +26,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -308,6 +310,9 @@ public class MainActivity extends FragmentActivity {
         IntentFilter intentFilter = new IntentFilter("hig.herd.NGAJ.RECEIVEDATA");
         LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(this.ReceiveData ,intentFilter);      
         
+        //Check if GPS is enabled
+        checkGPS();
+        
         //Start Service with Intent
         serviceIntent.putExtra("Key", 5);
         startService(serviceIntent);
@@ -333,6 +338,68 @@ public class MainActivity extends FragmentActivity {
 		
 	}
 	
+	private void checkGPS()
+	{
+		if(getPreferences(MODE_PRIVATE).getBoolean("ignoreGPS", false)==false)
+		{
+			LocationManager mlocationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+
+			if (!mlocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)){
+				showGPSAlert();
+			}
+		}
+	}
+	private void showGPSAlert()
+	{
+		Alert = new AlertDialog.Builder(this);
+		String strTitle="GPS not enabled!";
+		String strMessage="Your GPS is disabled.\nDo you want to go to location settings and enable it?";
+		String strPositive="Yes";
+		String strNegative="Continue Anyway";
+		String strCheckBox="Do not show this prompt again.";
+		if(Locale.getDefault().getDisplayName().equals("English (New Zealand)"))
+		{
+			strTitle="GPS eshte i ndalur!";
+			strMessage = "GPS i juaj eshte i ndalur.\nA deshironi ta aktivizoni ate?";
+			strPositive="Po";
+			strNegative="Vazhdo pa e aktivizuar";
+			strCheckBox="Mos e shfaq kete udhezim ne te ardhmen";
+		}
+		Alert.setTitle(strTitle);
+		Alert.setMessage(strMessage);
+		final CheckBox chBox = new CheckBox(this);
+		Alert.setView(chBox);
+		chBox.setText(strCheckBox);
+		
+		Alert.setPositiveButton(strPositive, new DialogInterface.OnClickListener() {
+			
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				
+				Intent gpsOptionsIntent = new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS);  
+				startActivity(gpsOptionsIntent);
+				if(chBox.isChecked())
+				{
+					getPreferences(MODE_PRIVATE).edit().putBoolean("ignoreGPS", true).commit();
+				}
+							
+			}
+		});
+		Alert.setNegativeButton(strNegative, new DialogInterface.OnClickListener() {
+			
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				if(chBox.isChecked())
+				{
+					getPreferences(MODE_PRIVATE).edit().putBoolean("ignoreGPS", true).commit();
+				}
+			}
+		});
+		Alert.show();
+		
+		
+		
+	}
 	private void serviceChecker()
 	{
 	 //This method checks if the service is runing while the app is in the record mode if OS killes the service 
