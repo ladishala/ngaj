@@ -621,7 +621,7 @@ public class MainActivity extends FragmentActivity {
 		else
 		{
 			result=1;
-			mProgress.setMax(2750);
+			mProgress.setMax(1000);
 			mProgress.setProgress(score);
 			CurrentLevel.setImageResource(R.drawable.one);
 			NextLevel.setImageResource(R.drawable.two);

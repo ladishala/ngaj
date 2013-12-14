@@ -38,8 +38,14 @@ public class Stats extends Activity {
 		setContentView(R.layout.activity_stats);
 		
 		
-		db=openOrCreateDatabase("NGAJ.db",MODE_PRIVATE,null);
-
+		try
+		{
+		  db=openOrCreateDatabase("NGAJ.db",MODE_PRIVATE,null);
+		}
+		catch(Exception e)
+		{
+			
+		}
 		if(calendar.get(Calendar.DATE)<=9)
 		{
 			date="0"+Integer.toString(calendar.get(Calendar.DATE));

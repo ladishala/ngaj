@@ -23,11 +23,13 @@
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             android:layout_alignParentLeft="true"
-            android:orientation="horizontal" >
+            android:orientation="horizontal"
+            android:baselineAligned="false" >
 
             <LinearLayout
                 android:id="@+id/rspeedlayout"
-                android:layout_width="145dp"
+                android:layout_width="0dp"
+         	    android:layout_weight="1"
                 android:layout_height="wrap_content"
                 android:layout_marginRight="2dp"
                 android:layout_marginTop="2dp"
@@ -59,7 +61,8 @@
 
             <LinearLayout
                 android:id="@+id/rstepslayout"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
+         	    android:layout_weight="1"
                 android:layout_height="match_parent"
                 android:layout_marginLeft="2dp"
                 android:layout_marginTop="2dp"
@@ -90,11 +93,13 @@
             android:layout_height="wrap_content"
             android:layout_above="@+id/rstatisticsr2"
             android:layout_alignParentLeft="true"
-            android:orientation="horizontal" >
+            android:orientation="horizontal"
+            android:baselineAligned="false" >
 
             <LinearLayout
                 android:id="@+id/rtimelayout"
-                android:layout_width="145dp"
+                android:layout_width="0dp"
+         	    android:layout_weight="1"
                 android:layout_height="wrap_content"
                 android:layout_marginRight="2dp"
                 android:layout_marginTop="2dp"
@@ -119,7 +124,8 @@
 
             <LinearLayout
                 android:id="@+id/rdistancelayout"
-                android:layout_width="fill_parent"
+          	    android:layout_width="0dp"
+                android:layout_weight="1"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="2dp"
                 android:layout_marginTop="2dp"

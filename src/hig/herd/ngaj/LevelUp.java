@@ -90,7 +90,7 @@ public class LevelUp extends Activity {
 		} 	
 		else 
 		{   
-			strResult ="Well Done! \nYou have reached maximum level!\nYour current level is :";
+			strResult ="Well Done! \nYou have reached one level up!\nYour current level is :";
     	}
 		if(Level==5)
 		{
