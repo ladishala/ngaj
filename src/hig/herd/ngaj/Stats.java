@@ -64,21 +64,33 @@ public class Stats extends Activity {
 		for(int i=6;i>=0;i--)
 	    {
 			double TotalDistance=0;
-			Cursor cr1= db.rawQuery("Select SUM(Distance) as TotalDistance From tblTracks Where Date='"+year+"-"+month+"-"+date+"'",null);
-	    	if(cr1.moveToFirst())
+			try
 			{
-			TotalDistance = (double)cr1.getFloat(cr1.getColumnIndex("TotalDistance"));
+				Cursor cr1= db.rawQuery("Select SUM(Distance) as TotalDistance From tblTracks Where Date='"+year+"-"+month+"-"+date+"'",null);
+				if(cr1.moveToFirst())
+				{
+					TotalDistance = (double)cr1.getFloat(cr1.getColumnIndex("TotalDistance"));
+				}
+				values1[i]= Double.parseDouble(new DecimalFormat("#").format(TotalDistance)); 
 			}
-			values1[i]= Double.parseDouble(new DecimalFormat("#").format(TotalDistance)); 
-		
-			double TotalSteps=0;
-			cr1= db.rawQuery("Select SUM(Steps) From tblTracks Where Date='"+year+"-"+month+"-"+date+"'",null);
-			if(cr1.moveToFirst())
+			catch(Exception e)
 			{
-			TotalSteps = cr1.getInt(0);
+				
 			}
-			values2[i]=Double.parseDouble(new DecimalFormat("#").format(TotalSteps)); 
-			
+			try
+			{
+				double TotalSteps=0;
+				Cursor cr1= db.rawQuery("Select SUM(Steps) From tblTracks Where Date='"+year+"-"+month+"-"+date+"'",null);
+				if(cr1.moveToFirst())
+				{
+					TotalSteps = cr1.getInt(0);
+				}
+				values2[i]=Double.parseDouble(new DecimalFormat("#").format(TotalSteps)); 
+			}
+			catch(Exception ex)
+			{
+				
+			}
 			ValuesX[i]=date+"-"+month;
 			decreaseDate();
 			

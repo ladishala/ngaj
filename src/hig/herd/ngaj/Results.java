@@ -58,7 +58,7 @@ public class Results extends FragmentActivity {
 	SocialAuthAdapter adapter;
 	LinearLayout bar;
 	AlertDialog.Builder Alert;
-	TextView helloworld;
+	TextView txtRank;
 	GoogleMap mapView;
 	TextView txtSteps;
 	TextView txtTime;
@@ -82,7 +82,7 @@ public class Results extends FragmentActivity {
 		
 		Intent i = getIntent();
 		
-		helloworld = (TextView)findViewById(R.id.txtRank);
+		txtRank = (TextView)findViewById(R.id.txtRank);
 		txtSteps = (TextView)findViewById(R.id.rsteps2);	
 		txtSpeed = (TextView)findViewById(R.id.rspeed2);
 		txtSpeedExtras=(TextView)findViewById(R.id.rspeed3);
@@ -259,11 +259,11 @@ public class Results extends FragmentActivity {
 			result = 500;
 			if (Locale.getDefault().getDisplayName().equals("English (New Zealand)")) 
 			{
-				helloworld.setText("Vleresimi i shtegut: Gold \n(500 Pike)");
+				txtRank.setText("Vleresimi i shtegut: Gold \n(500 Pike)");
 			} 	
 			else 
 			{   
-				helloworld.setText("Track Rank: Gold (500 Points)");
+				txtRank.setText("Track Rank: Gold (500 Points)");
         	}
 		}
 		else if(Distance>=5 && avgSpeed>=10)
@@ -271,11 +271,11 @@ public class Results extends FragmentActivity {
 			result = 250;
 			if (Locale.getDefault().getDisplayName().equals("English (New Zealand)")) 
 			{
-				helloworld.setText("Vleresimi i shtegut: Silver \n(250 Pike)");
+				txtRank.setText("Vleresimi i shtegut: Silver \n(250 Pike)");
 			} 	
 			else 
 			{   
-				helloworld.setText("Track Rank: Silver (250 Points)");
+				txtRank.setText("Track Rank: Silver (250 Points)");
         	}
 			
 		}
@@ -284,11 +284,11 @@ public class Results extends FragmentActivity {
 			result = 125;
 			if (Locale.getDefault().getDisplayName().equals("English (New Zealand)")) 
 			{
-				helloworld.setText("Vleresimi i shtegut: Bronze \n(125 Pike)");
+				txtRank.setText("Vleresimi i shtegut: Bronze \n(125 Pike)");
 			} 	
 			else 
 			{   
-				helloworld.setText("Track Rank: Bronze (125 Points)");
+				txtRank.setText("Track Rank: Bronze (125 Points)");
         	}
 			
 		}
@@ -297,11 +297,11 @@ public class Results extends FragmentActivity {
 			result = 0;
 			if (Locale.getDefault().getDisplayName().equals("English (New Zealand)")) 
 			{
-				helloworld.setText("Vleresimi i shtegut: Pa Medalje \n(0 Pike)");
+				txtRank.setText("Vleresimi i shtegut: Pa Medalje \n(0 Pike)");
 			} 	
 			else 
 			{   
-				helloworld.setText("Track Rank: No Medal (0 Points)");
+				txtRank.setText("Track Rank: No Medal (0 Points)");
         	}
 						
 		}
@@ -329,7 +329,7 @@ public class Results extends FragmentActivity {
 	                            backBitmap.getConfig());
 	                    Canvas canvas = new Canvas(bmOverlay);
 	                    canvas.drawBitmap(backBitmap, new Matrix(), null);
-	                    canvas.drawBitmap(snapshot, 0, helloworld.getBottom()+2, null);
+	                    canvas.drawBitmap(snapshot, 0, txtRank.getBottom()+2, null);
 	                    Filename=Environment.getExternalStorageDirectory()
                                 + "/NgajLastScreenShot"
                                 +".png";
