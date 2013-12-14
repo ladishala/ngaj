@@ -36,8 +36,8 @@ import android.widget.TextView;
 public class MainActivity extends FragmentActivity {
 
 	/**
-	 * Declare GUI components
-	 * and the map components
+	 * Declare GUI components,map components
+	 * and other variables.
 	 */
 
 	AlertDialog.Builder Alert;
@@ -49,12 +49,15 @@ public class MainActivity extends FragmentActivity {
 	ProgressBar mProgress;
 	GoogleMap mapView;
 	ArrayList<LatLng> latLngList = new ArrayList<LatLng>();
-
 	Intent serviceIntent;
 	Button btnStart;
 	Boolean OrientationChange;
-	
-	/*
+	int TotalScore=0;
+	int Level;
+	ImageView imgCurrentLevel;
+	ImageView imgNextLevel;
+	Timer mTimer;
+	/**
 	 * Key For knowing app state
 	 * 0 - Not Recording
 	 * 1 - Recording
@@ -62,11 +65,7 @@ public class MainActivity extends FragmentActivity {
 	 */
 	int k=0;
 	
-	int TotalScore=0;
-	int Level;
-	ImageView CurrentLevel;
-	ImageView NextLevel;
-	Timer timer;
+	
 
 
 	@Override
@@ -74,6 +73,9 @@ public class MainActivity extends FragmentActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		
+		/**
+		 * Intialize UI variables
+		 */
 		txtSteps = (TextView)findViewById(R.id.steps2);	
 		txtSpeed = (TextView)findViewById(R.id.speed2);
 		txtSpeedExtras=(TextView)findViewById(R.id.speed3);
@@ -81,18 +83,19 @@ public class MainActivity extends FragmentActivity {
 		txtDistance = (TextView)findViewById(R.id.distance2);	
 		btnStart=(Button)findViewById(R.id.btnStart);
 		mProgress =(ProgressBar)findViewById(R.id.progressBar1);
-		CurrentLevel=(ImageView)findViewById(R.id.CurrentLevel);
-		NextLevel=(ImageView)findViewById(R.id.NextLevel);
+		imgCurrentLevel=(ImageView)findViewById(R.id.CurrentLevel);
+		imgNextLevel=(ImageView)findViewById(R.id.NextLevel);
 		serviceIntent = new Intent(this,GPSservice.class);
 		
 		/**
-		 * Get the MapView widget, set the zoom controllers 
-		 * and set the initial zoom level of the map
-		 * 
-		 * 
+		 * Get the GoogleMaps Fragment widget
 		 */
 		mapView = ((SupportMapFragment)getSupportFragmentManager().findFragmentById(R.id.mapview)).getMap();
         
+		/**
+		 * Call method getLevel which calculates users level and displays in in ratingbar
+		 * together with coresponding imageviews.
+		 */
 		getLevel();
      }
 
@@ -127,7 +130,7 @@ public class MainActivity extends FragmentActivity {
 		mapView.setMyLocationEnabled(false);
 		if(k==1)
 		{
-		k=2;
+			k=2;
 		}
 		savePreferences();
 	}
@@ -136,6 +139,11 @@ public class MainActivity extends FragmentActivity {
 		super.onResume();
 		getPreferences();
 		
+		/**
+		 * If orientation was changed app automaticaly recovers and resumes previous session
+		 * If app was previously destroyed while recording user is offered to continue previous session
+		 * Else we ensure that the initial values are set to text boxes and button.
+		 */
 		if(k==1 || (k==2 && OrientationChange))
 		{
 			
@@ -181,6 +189,10 @@ public class MainActivity extends FragmentActivity {
 	
 	}
    
+	/**
+	 * This method shown the AlertDialog where user is prompted to 
+	 * continue his previous workout.
+	 */
 	private void showResumeAlert()
 	{
 		Alert = new AlertDialog.Builder(this);
@@ -201,7 +213,11 @@ public class MainActivity extends FragmentActivity {
 			
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
-				
+				/**
+				 * If user chooses to continue his previous workout the GPSservice is started
+				 * by intent with parameter "Key" set to 1 which indicates service to continue previous session
+				 * by loading shared preferences
+				 */
 				try {
 					serviceIntent.putExtra("Key", 1);
 					k=1;
@@ -221,6 +237,12 @@ public class MainActivity extends FragmentActivity {
 			
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
+			/**
+			 * If user chooses not to continue his previous session UI textview text and buttons text are
+			 * set to initial value. Also we clear the map and the array where location points reported 
+			 * from GPSservice are saved.
+			 */
+				
 			k=0;	
 			btnStart.setText("Start");
 			if(Locale.getDefault().getDisplayName().equals("English (New Zealand)"))
@@ -236,9 +258,12 @@ public class MainActivity extends FragmentActivity {
 			mapView.clear();
 			}
 		});
-		Alert.show();
-				
+		Alert.show();		
 	}
+	
+	/**
+	 * This method show the AlertDialog where user should confirm discarding current session.
+	 */
 	private void showDiscardAlert()
 	{
 		Alert = new AlertDialog.Builder(this);
@@ -295,9 +320,14 @@ public class MainActivity extends FragmentActivity {
 		
 		
 	}
+	
+	/**
+	 * This method is called on click of start/pause button.
+	 * 
+	 */
 	public void startRecording(View v)
 	{ 
-		/*
+		/**
 		 * Start/Stop GPSservice based on value of k.
 		 */
 		if(k==0)
@@ -313,7 +343,10 @@ public class MainActivity extends FragmentActivity {
         //Check if GPS is enabled
         checkGPS();
         
-        //Start Service with Intent
+        /**
+         * Start Service with Intent and with "Key" parameter set to an arbitrary value 5 which 
+         * indicates Service not to load shared preferences
+         */
         serviceIntent.putExtra("Key", 5);
         startService(serviceIntent);
         
@@ -325,19 +358,38 @@ public class MainActivity extends FragmentActivity {
         	btnStart.setText("Pauzo");
 		}
         k=1;
+  
+        /**
+         * Call service checker method which ensures that GPSservice is running during the record.
+         */
+        
         serviceChecker();
+        
+        /**
+         * Clear map and array where location points are saved
+         */
         latLngList.clear();
         mapView.clear();
         mapView.setMyLocationEnabled(true);
 		}
 		else if(k==1)
 		{
+			/**
+			 * By editing GPSServiceState variable on shared preferences we tell the GPSservice to go on pause mode
+			 * and so ignore location updates and pause timer.			 * 
+			 */
 			getSharedPreferences("GPSServiceState",MODE_PRIVATE).edit().putInt("GPSServiceState",2).commit();
-			showPauseAlert();	
+			//If the app was recording call showPauseAlert which shows pause alertdialog.
+			showPauseAlert();
 		}
 		
 	}
 	
+	/**
+	 * This method checks if GPS is enabled if user hasn't previously disabled this check and GPS is disabled
+	 * it calls showGPSAlert method which prompts user that GPS is not enabled and offers him to go to location
+	 * settings and enable it.
+	 */
 	private void checkGPS()
 	{
 		if(getPreferences(MODE_PRIVATE).getBoolean("ignoreGPS", false)==false)
@@ -349,6 +401,10 @@ public class MainActivity extends FragmentActivity {
 			}
 		}
 	}
+	/**
+	 * This method prompts user that GPS is not enabled and offers him to go to location
+	 * settings and enable it.
+	 */
 	private void showGPSAlert()
 	{
 		Alert = new AlertDialog.Builder(this);
@@ -375,7 +431,11 @@ public class MainActivity extends FragmentActivity {
 			
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
-				
+				/**
+				 * If user chooses to go to location settings then he is redirected to there with intent.
+				 * Also te value of checkbox is saved to ingoreGPS variable in shared preferences which defines
+				 * if GPS check is disabled or not.
+				 */
 				Intent gpsOptionsIntent = new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS);  
 				startActivity(gpsOptionsIntent);
 				if(chBox.isChecked())
@@ -402,11 +462,13 @@ public class MainActivity extends FragmentActivity {
 	}
 	private void serviceChecker()
 	{
-	 //This method checks if the service is runing while the app is in the record mode if OS killes the service 
-     // then this method will restart it.
-	 // for performance issues we decided to trigger this checker to check every 5 seconds.
-	 timer = new Timer();
-	 timer.scheduleAtFixedRate(new TimerTask() {
+		/**
+         * This method checks if the service is runing while the app is in the record mode if OS killes the service
+         * then this method will restart it.
+         * for performance issues we decided to trigger this checker to check every 5 seconds.
+         */
+	 mTimer = new Timer();
+	 mTimer.scheduleAtFixedRate(new TimerTask() {
 		 
 	    public void run() {
 	    	
@@ -417,17 +479,26 @@ public class MainActivity extends FragmentActivity {
 	        }
 	        else if(k==0)
 	   	   {
-	    	   	timer.cancel();
+	        	mTimer.cancel();
 	   	   }
 	    	   }
 	      }, 5000, 5000);
 	}
+	
+	/**
+	 * This method is called before orientation change and it 
+	 * sets OrientationChange variable value to true this is used to differ app destroy and orientation change. 
+	 */
 	public Object onRetainCustomNonConfigurationInstance()
 	{
 		OrientationChange=true;
 		return OrientationChange;
 	}
-	
+	/**
+	 * This method starts results activity and sends current tracks stats via intent.
+	 * It also starts DBservice and sends the same values as results via intent and then DBservice saves these
+	 * values to local database.
+	 */
 	private void startResults(String Name)
 	{
 		k=0;
@@ -454,7 +525,9 @@ public class MainActivity extends FragmentActivity {
 		latLngList.clear();
 		mapView.clear();
 	}
-	
+	/**
+	 * This Method shows Pause AlertDialog.
+	 */
 	private void showPauseAlert()
 	{
 		Alert = new AlertDialog.Builder(this);
@@ -479,6 +552,10 @@ public class MainActivity extends FragmentActivity {
 			public void onClick(DialogInterface dialog, int which) {
 				
 				try {
+					/**
+					 * If users chooses to save the tack the showNameTrackAlert method is called which offers user to
+					 * name the track being saved. 
+					 */
 					showNameTrackAlert();
 															 
 				} catch (Exception ex) {
@@ -492,6 +569,11 @@ public class MainActivity extends FragmentActivity {
 			
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
+		    /**
+		     * If user chooses to resume recording the GPSServiceState variable of shared preferences is set to 1
+		     * which indicates GPSservice to go into recording state. Also the k variable is set to 1 which tell the app
+		     * that it is in recording state and Google Maps mapview is configured to show current location pointer on the map.
+		     */
 			k=1;
 			getSharedPreferences("GPSServiceState",MODE_PRIVATE).edit().putInt("GPSServiceState",1).commit();
 			mapView.setMyLocationEnabled(true);
@@ -501,6 +583,9 @@ public class MainActivity extends FragmentActivity {
 			
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
+				/**
+				 * If user chooses discard option 
+				 */
 			showDiscardAlert();
 			}
 		});
@@ -508,7 +593,9 @@ public class MainActivity extends FragmentActivity {
 				
 	}
 	
-	
+	/**
+	 * This method shows NameTrack AlertDialog.
+	 */
 	private void showNameTrackAlert()
 	{
 		Alert = new AlertDialog.Builder(this);
@@ -534,7 +621,10 @@ public class MainActivity extends FragmentActivity {
 			
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
-				
+				/**
+				 * If user chooses to save the track the startResults method is called, the GPSservice is stoped and 
+				 * the variable k value is set to 0 this tells the app that it is now on not recording mode.
+				 */
 				try {
 					k=0;
 					startResults(input.getText().toString());
@@ -564,6 +654,7 @@ public class MainActivity extends FragmentActivity {
 	/**
 	 * Draws a point into the map using the coordinates given as parameters.
 	 * This is done if the Latitude and Longitude are not 0, since this is the default value.
+	 * It also moves the camera to center the just drawn point.
 	 */
 	private void addPoint(double Latitude,double Longitude)
 	{
@@ -578,11 +669,19 @@ public class MainActivity extends FragmentActivity {
                 .width(6).color(-16776961));
 		}
 	}
+	/**
+	 * This method gets TotalScore from shared preferences and also calculates the Level by calling
+	 * calculatelevel method.
+	 */
 	private void getLevel()
 	{
 		TotalScore=getSharedPreferences("TotalScore",MODE_PRIVATE).getInt("TotalScore",0);
 		Level = calculateLevel(TotalScore);	
 	}
+	/**
+	 * This method calculates the level based on parameter score and it also fills the progressbar and 
+	 * puts the right images on the current and nextlevel imageviews.
+	 */
 	private int calculateLevel(int score)
 	{
 		int result=1;
@@ -591,44 +690,47 @@ public class MainActivity extends FragmentActivity {
 			result=5;
 			mProgress.setMax(score);
 			mProgress.setProgress(score);
-			CurrentLevel.setImageResource(R.drawable.elite);
-			NextLevel.setImageResource(R.drawable.elite);
+			imgCurrentLevel.setImageResource(R.drawable.elite);
+			imgNextLevel.setImageResource(R.drawable.elite);
 		}
 		else if(score>=5750)
 		{
 			result=4;
 			mProgress.setMax(10500-5750);
 			mProgress.setProgress(score-5750);
-			CurrentLevel.setImageResource(R.drawable.four);
-			NextLevel.setImageResource(R.drawable.five);
+			imgCurrentLevel.setImageResource(R.drawable.four);
+			imgNextLevel.setImageResource(R.drawable.five);
 		}
 		else if(score>=2750)
 		{
 			result=3;
 			mProgress.setMax(5750-2750);
 			mProgress.setProgress(score-2750);
-			CurrentLevel.setImageResource(R.drawable.three);
-			NextLevel.setImageResource(R.drawable.four);
+			imgCurrentLevel.setImageResource(R.drawable.three);
+			imgNextLevel.setImageResource(R.drawable.four);
 		}
 		else if(score>=1000)
 		{
 			result=2;
 			mProgress.setMax(2750-1000);
 			mProgress.setProgress(score-1000);
-			CurrentLevel.setImageResource(R.drawable.two);
-			NextLevel.setImageResource(R.drawable.three);
+			imgCurrentLevel.setImageResource(R.drawable.two);
+			imgNextLevel.setImageResource(R.drawable.three);
 		}
 		else
 		{
 			result=1;
 			mProgress.setMax(1000);
 			mProgress.setProgress(score);
-			CurrentLevel.setImageResource(R.drawable.one);
-			NextLevel.setImageResource(R.drawable.two);
+			imgCurrentLevel.setImageResource(R.drawable.one);
+			imgNextLevel.setImageResource(R.drawable.two);
 		}
 		
 		return result;
 	}
+	/**
+	 * This method saves variables k,OrientationChange and array latLngList in the shared preferences.
+	 */
 	private void savePreferences()
 	{
 		getPreferences(MODE_PRIVATE).edit().putInt("Key",k).commit();
@@ -643,6 +745,9 @@ public class MainActivity extends FragmentActivity {
 			}
 		
 	}
+	/**
+	 * This method reads variables k,OrientationChange and array latLngList from shared preferences.
+	 */
 	private void getPreferences()
 	{
 		k=getPreferences(MODE_PRIVATE).getInt("Key",0);
@@ -656,16 +761,26 @@ public class MainActivity extends FragmentActivity {
         }
 	}
 	
+	/**
+	 * This method is called when camera button is clicked is starts cameraActivity via intent
+	 * and offers user to take a photo and save it to galery.
+	 */
 	public void cameraClick(View v)
 	{
 		Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
 		startActivity(cameraIntent);
 	}
+	/**
+	 * This method is called when stats button is clicked it starts Stats activity via intent
+	 */
 	public void statsClick(View v)
 	{
 		Intent i = new Intent(MainActivity.this,Stats.class);
 		startActivity(i);
 	}
+	/**
+	 * This method is called when tracks button is clicked it starts Tracks activity via intent
+	 */
 	public void viewTracks(View v)
 	{
 		Intent i = new Intent(MainActivity.this,Tracks.class);
