@@ -99,7 +99,7 @@ public class Stats extends Activity {
 		
      		LinearLayout layout1 = (LinearLayout) findViewById(R.id.graph2);  
      		LinearLayout layout2=(LinearLayout) findViewById(R.id.graph1); 
-     		String strGraph1="Total Discance(Km)";
+     		String strGraph1="Total Distance(Km)";
      		String strGraph2="Total Steps";
      		if (Locale.getDefault().getDisplayName().equals("English (New Zealand)")) 
 			{
@@ -165,6 +165,7 @@ public class Stats extends Activity {
 		}  
 		// graph with dynamically genereated horizontal and vertical labels  
 		GraphViewSeries exampleSeries = new GraphViewSeries(data);
+		
 		GraphView graphView = new LineGraphView(  
 			      this // context  
 			      , title // heading  
@@ -179,7 +180,7 @@ public class Stats extends Activity {
 			double m2=Double.parseDouble(new DecimalFormat("#").format((middle+min)/2));
 			String a []={String.valueOf(max),String.valueOf(m1),String.valueOf(middle),String.valueOf(m2),String.valueOf(min)};
 			graphView.setVerticalLabels(a);
-			layout.addView(graphView); 
+			layout.addView(graphView);
 	}
 
 	@Override
