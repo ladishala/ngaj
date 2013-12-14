@@ -10,6 +10,8 @@ import java.util.TimeZone;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
+import android.content.res.Configuration;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
@@ -31,21 +33,17 @@ public class Stats extends Activity {
 	String month;
 	String year;
 	String ValuesX [] = new String[7];
+	int screenSize;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_stats);
+		screenSize= getResources().getConfiguration().screenLayout &
+		        Configuration.SCREENLAYOUT_SIZE_MASK;
 		
+		db=openOrCreateDatabase("NGAJ.db",MODE_PRIVATE,null);
 		
-		try
-		{
-		  db=openOrCreateDatabase("NGAJ.db",MODE_PRIVATE,null);
-		}
-		catch(Exception e)
-		{
-			
-		}
 		if(calendar.get(Calendar.DATE)<=9)
 		{
 			date="0"+Integer.toString(calendar.get(Calendar.DATE));
@@ -57,8 +55,8 @@ public class Stats extends Activity {
 		month=Integer.toString(calendar.get(Calendar.MONTH)+1);
 		year=Integer.toString(calendar.get(Calendar.YEAR));
 
-		double values1 []=new double[7]; //{5,7,13,9,4,10,6};
-		double values2 []=new double[7]; //{5,7,13,5,6,10,2};
+		double values1 []=new double[7];
+		double values2 []=new double[7];
 		
 		
 		for(int i=6;i>=0;i--)
@@ -106,8 +104,16 @@ public class Stats extends Activity {
      			strGraph1="Gjithsejt Distanca(Km)";
      			strGraph2="Gjithsejt Hapa";
 			}
-     		DrawGraphs(layout1,values1,strGraph1);
-     		DrawGraphs(layout2,values2,strGraph2);
+     		if(screenSize==Configuration.SCREENLAYOUT_SIZE_SMALL)
+     		{
+     			DrawGraphs(layout1,values1,strGraph1);
+     			setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+     		}
+     		else
+     		{
+     			DrawGraphs(layout1,values1,strGraph1);
+     			DrawGraphs(layout2,values2,strGraph2);
+     		}
 	}
 	
 	private void decreaseDate()
