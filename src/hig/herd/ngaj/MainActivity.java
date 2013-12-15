@@ -49,7 +49,7 @@ public class MainActivity extends FragmentActivity {
 	ArrayList<LatLng> latLngList = new ArrayList<LatLng>();
 	Intent serviceIntent;
 	Button btnStart;
-	Boolean OrientationChange;
+	Boolean OrientationChange = false;
 	int TotalScore = 0;
 	int Level;
 	ImageView imgCurrentLevel;
@@ -91,6 +91,16 @@ public class MainActivity extends FragmentActivity {
 		 * ratingbar together with coresponding imageviews.
 		 */
 		getLevel();
+
+		/**
+		 * Get the value of variable k from shared preferences and get location points
+		 * from shared preferences if k==1 which means the app is reopened.
+		 */
+		getPreferences();
+		if (k == 1) {
+			getlatLngList();
+		}
+	
 	}
 
 	@Override
@@ -115,7 +125,6 @@ public class MainActivity extends FragmentActivity {
 	public void onPause() {
 		super.onPause();
 		savePreferences();
-		mapView.setMyLocationEnabled(false);
 	}
 
 	public void onDestroy() {
@@ -130,8 +139,8 @@ public class MainActivity extends FragmentActivity {
 
 	public void onResume() {
 		super.onResume();
-		getPreferences();
 
+		getPreferences();
 		/**
 		 * If orientation was changed app automaticaly recovers and resumes
 		 * previous session If app was previously destroyed while recording user
@@ -145,6 +154,7 @@ public class MainActivity extends FragmentActivity {
 					.equals("English (New Zealand)")) {
 				btnStart.setText("Pauzo");
 			}
+
 			mapView.setMyLocationEnabled(true);
 			IntentFilter intentFilter = new IntentFilter(
 					"hig.herd.NGAJ.RECEIVEDATA");
@@ -154,6 +164,7 @@ public class MainActivity extends FragmentActivity {
 			if (k == 2 && OrientationChange) {
 				serviceIntent.putExtra("Key", 1);
 				startService(serviceIntent);
+				getlatLngList();
 			}
 			OrientationChange = false;
 			k = 1;
@@ -218,6 +229,7 @@ public class MainActivity extends FragmentActivity {
 									getApplicationContext()).registerReceiver(
 									ReceiveData, intentFilter);
 							mapView.setMyLocationEnabled(true);
+							getlatLngList();
 
 						} catch (Exception ex) {
 							// TODO Auto-generated catch block
@@ -288,6 +300,7 @@ public class MainActivity extends FragmentActivity {
 									.equals("English (New Zealand)")) {
 								btnStart.setText("Nisu");
 							}
+							stopService(serviceIntent);
 							txtTime.setText("00:00:00");
 							txtSpeed.setText("0.00");
 							txtDistance.setText("0.00");
@@ -296,7 +309,6 @@ public class MainActivity extends FragmentActivity {
 							latLngList.clear();
 							mapView.clear();
 							mapView.setMyLocationEnabled(false);
-							stopService(serviceIntent);
 
 						} catch (Exception ex) {
 							// TODO Auto-generated catch block
@@ -535,7 +547,7 @@ public class MainActivity extends FragmentActivity {
 	private void showPauseAlert() {
 		Alert = new AlertDialog.Builder(this);
 		String strTitle = "Workout Paused!";
-		String strMessage = "What you want to do?";
+		String strMessage = "What do you want to do?";
 		String strPositive = "Save";
 		String strNegative = "Resume";
 		String strNeutral = "Discard";
@@ -763,13 +775,18 @@ public class MainActivity extends FragmentActivity {
 	}
 
 	/**
-	 * This method reads variables k,OrientationChange and array latLngList from
-	 * shared preferences.
+	 * This method reads variables k,OrientationChange from shared preferences.
 	 */
 	private void getPreferences() {
 		k = getPreferences(MODE_PRIVATE).getInt("Key", 0);
 		OrientationChange = getPreferences(MODE_PRIVATE).getBoolean(
 				"OrientationChange", false);
+	}
+
+	/**
+	 * This method gets latLngList from shared preferences
+	 */
+	private void getlatLngList() {
 		latLngList.clear();
 		int size = getPreferences(MODE_PRIVATE).getInt("Size", 0);
 		for (int i = 0; i < size; i++) {

@@ -299,7 +299,7 @@ public class CalibratePedometer extends Activity implements SensorEventListener 
 	 * This method checks if the current magnitude values given in paramter
 	 * magnitude indicates a step this method is called for each magnitude value
 	 * of magnitudes list and it will indicate a step only for the true sequence
-	 * of variables: down,up,down.
+	 * of variables: up,down,up.
 	 * 
 	 * If it is a new step it returns true.
 	 */

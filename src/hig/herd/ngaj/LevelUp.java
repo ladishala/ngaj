@@ -44,7 +44,7 @@ public class LevelUp extends Activity {
 	String Filename = "";
 	TextView txtLevel;
 
-	int Level;
+	public int Level;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -85,7 +85,7 @@ public class LevelUp extends Activity {
 	 * This method calculates the text to be shown on UI based on achieved
 	 * level.
 	 */
-	private void calculateText() {
+	public void calculateText() {
 		String strResult = "";
 
 		if (Locale.getDefault().getDisplayName()

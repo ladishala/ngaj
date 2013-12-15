@@ -27,7 +27,7 @@ public class Tracks extends Activity {
 	 */
 	ListView myList;
 	List<String> listItems = new ArrayList<String>();
-	List<String> listItemExtras = new ArrayList<String>();
+	public List<String> listItemExtras = new ArrayList<String>();
 	List<Integer> listIDs = new ArrayList<Integer>();
 	ArrayAdapter<String> myAdapter;
 	AlertDialog.Builder Alert;
@@ -40,6 +40,7 @@ public class Tracks extends Activity {
 
 		// Connect to database, Create database if needed.
 		db = openOrCreateDatabase("NGAJ.db", MODE_PRIVATE, null);
+
 
 		// Initialize listview variable
 		myList = (ListView) findViewById(R.id.listView1);

@@ -162,13 +162,13 @@ public class GPSservice extends Service implements SensorEventListener,
 	 * This method checks if the current magnitude values indicates a step this
 	 * method is called for each magnitude value read from accelerometer and it
 	 * will indicate a step only for the true sequence of variables:
-	 * down,up,down.
+	 * up,down,up.
 	 */
 	private void checkforStep() {
 		if (magnitude > upThreshold) {
 			if (up && down) {
 				up = false;
-				down = false;
+				down = false;		
 				Steps++;
 				sendsteps();
 			} else {
