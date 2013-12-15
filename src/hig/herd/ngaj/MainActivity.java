@@ -190,7 +190,7 @@ public class MainActivity extends FragmentActivity {
 	}
    
 	/**
-	 * This method shown the AlertDialog where user is prompted to 
+	 * This method shows the AlertDialog where user is prompted to 
 	 * continue his previous workout.
 	 */
 	private void showResumeAlert()

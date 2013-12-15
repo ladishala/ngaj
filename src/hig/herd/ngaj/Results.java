@@ -51,8 +51,8 @@ public class Results extends FragmentActivity {
 
 	
 	/**
-	 * Declare social networking share components
-	 * and the map components
+	 * Declare social networking share components,
+	 * map components, UI components and acitivity variables.
 	 */
 
 	SocialAuthAdapter adapter;
@@ -70,8 +70,8 @@ public class Results extends FragmentActivity {
 	String Filename ="";
 	int TotalScore=0;
 	int Level;
-	ImageView CurrentLevel;
-	ImageView NextLevel;
+	ImageView imgCurrentLevel;
+	ImageView imgNextLevel;
 	ProgressBar mProgress;
 	
 	@Override
@@ -79,21 +79,24 @@ public class Results extends FragmentActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_results);
 		
-		
-		Intent i = getIntent();
-		
+		//Initialize UI component variables.
 		txtRank = (TextView)findViewById(R.id.txtRank);
 		txtSteps = (TextView)findViewById(R.id.rsteps2);	
 		txtSpeed = (TextView)findViewById(R.id.rspeed2);
 		txtSpeedExtras=(TextView)findViewById(R.id.rspeed3);
 		txtTime = (TextView)findViewById(R.id.rtime2);	
 		txtDistance = (TextView)findViewById(R.id.rdistance2);
-		CurrentLevel=(ImageView)findViewById(R.id.rCurrentLevel);
-		NextLevel = (ImageView)findViewById(R.id.rNextLevel);
+		imgCurrentLevel=(ImageView)findViewById(R.id.rCurrentLevel);
+		imgNextLevel = (ImageView)findViewById(R.id.rNextLevel);
 		mProgress =(ProgressBar)findViewById(R.id.rprogressBar1);
+		Layout1=(RelativeLayout)findViewById(R.id.Layout2);
+		bar = (LinearLayout) findViewById(R.id.linearbar2);
 		
+		//Read TotalScore from shared preferenes
 		TotalScore=getSharedPreferences("TotalScore",MODE_PRIVATE).getInt("TotalScore",0);
 		
+		//Read values from intent which started the activity
+		Intent i = getIntent();
 		String strSteps=i.getStringExtra("Steps");
 		String strSpeed=i.getStringExtra("Speed");
 		String strSpeedExtras=i.getStringExtra("SpeedExtras");
@@ -111,21 +114,17 @@ public class Results extends FragmentActivity {
 			}
 		}
 		
+		//Set text of UI components with just read values.
 		txtSteps.setText(strSteps);
 		txtSpeed.setText(strSpeed);
 		txtSpeedExtras.setText(strSpeedExtras);
 		txtTime.setText(strTime);
 		txtDistance.setText(strDistance);
-		Layout1=(RelativeLayout)findViewById(R.id.Layout2);
 		
-		
-		
-		bar = (LinearLayout) findViewById(R.id.linearbar2);
-		//bar.setBackgroundResource(R.drawable.bar_gradient);
-
+		//Initialize social authentication adapter
 		adapter = new SocialAuthAdapter(new ResponseListener());
 
-		// Add providers
+		// Add providers to social authentication adapter.
 		adapter.addProvider(Provider.FACEBOOK, R.drawable.facebook);
 		adapter.addProvider(Provider.TWITTER, R.drawable.twitter);
 		adapter.addProvider(Provider.MMS, R.drawable.other);
@@ -134,11 +133,14 @@ public class Results extends FragmentActivity {
 		
 	
 		/**
-		 * Get the MapView widget, set the zoom controllers 
-		 * and set the initial zoom level of the map
+		 * Get the GoogleMaps Fragment widget
 		 */
 		mapView = ((SupportMapFragment)getSupportFragmentManager().findFragmentById(R.id.rmapview)).getMap();
 		
+		/**
+		 * If size value is greater than 0 it means that some location points are recieved with the intent that
+		 * started the activity. If so these points are saved on latLngList and here they are drawn on the map. 
+		 */
 		if(size>0)
 		{
 			CameraUpdate camUpdate = CameraUpdateFactory.newLatLngZoom(latLngList.get(latLngList.size()/2),14);
@@ -147,17 +149,21 @@ public class Results extends FragmentActivity {
 			mapView.addMarker(new MarkerOptions().position(latLngList.get(0)).title("Start Point"));
 			mapView.addMarker(new MarkerOptions().position(latLngList.get(latLngList.size()-1)).title("End Point"));
 		}
+		
+		/**
+		 * This piece of code is to check if user has just saved the track or he is viewing a previously saved track.
+		 * When viewing the previously saved track the Level value is not sent via intent in this case only methods 
+		 * calculateMedal and calculateLevel are called otherwise method addScore is called.
+		 */
 		if(Level!=0)
 		{
-		addScore();
+			addScore();
 		}
 		else
 		{
 			calculateLevel(TotalScore);
 			calculateMedal();
 		}
-		
-		//addScore();
 	}
 
 	@Override
@@ -178,9 +184,17 @@ public class Results extends FragmentActivity {
 	    return true;
 	    
 	}
+	
+	/**
+	 * This method updates TotalScore by adding current tracks score calculated by calling calculateMedal method 
+	 * next it saves the updated TotalScore on shared preferenes.
+	 * 
+	 * Also this method calculated the diference of user's levels by including the score the score of current track 
+	 * and by excluding it. If the difference is 1 it means user has raised one level up and the levelUp activity with
+	 * the raised level sent via intent is started.
+	 */
 	private void addScore()
 	{
-		//Level = calculateLevel(TotalScore);
 		int diff = calculateLevel(TotalScore+calculateMedal())-Level;
 		TotalScore +=calculateMedal();
 		getSharedPreferences("TotalScore",MODE_PRIVATE).edit().putInt("TotalScore",TotalScore).commit();
@@ -191,6 +205,11 @@ public class Results extends FragmentActivity {
 			startActivity(i);
 		}
 	}
+	
+	/**
+	 * This method calculates the level based on parameter score and it also fills the progressbar and 
+	 * puts the right images on the current and nextlevel imageviews and returns current level.
+	 */
 	private int calculateLevel(int score)
 	{
 		int result=1;
@@ -199,44 +218,49 @@ public class Results extends FragmentActivity {
 			result=5;
 			mProgress.setMax(score);
 			mProgress.setProgress(score);
-			CurrentLevel.setImageResource(R.drawable.elite);
-			NextLevel.setImageResource(R.drawable.elite);
+			imgCurrentLevel.setImageResource(R.drawable.elite);
+			imgNextLevel.setImageResource(R.drawable.elite);
 		}
 		else if(score>=5750)
 		{
 			result=4;
 			mProgress.setMax(10500-5750);
 			mProgress.setProgress(score-5750);
-			CurrentLevel.setImageResource(R.drawable.four);
-			NextLevel.setImageResource(R.drawable.five);
+			imgCurrentLevel.setImageResource(R.drawable.four);
+			imgNextLevel.setImageResource(R.drawable.five);
 		}
 		else if(score>=2750)
 		{
 			result=3;
 			mProgress.setMax(5750-2750);
 			mProgress.setProgress(score-2750);
-			CurrentLevel.setImageResource(R.drawable.three);
-			NextLevel.setImageResource(R.drawable.four);
+			imgCurrentLevel.setImageResource(R.drawable.three);
+			imgNextLevel.setImageResource(R.drawable.four);
 		}
 		else if(score>=1000)
 		{
 			result=2;
 			mProgress.setMax(2750-1000);
 			mProgress.setProgress(score-1000);
-			CurrentLevel.setImageResource(R.drawable.two);
-			NextLevel.setImageResource(R.drawable.three);
+			imgCurrentLevel.setImageResource(R.drawable.two);
+			imgNextLevel.setImageResource(R.drawable.three);
 		}
 		else
 		{
 			result=1;
 			mProgress.setMax(1000);
 			mProgress.setProgress(score);
-			CurrentLevel.setImageResource(R.drawable.one);
-			NextLevel.setImageResource(R.drawable.two);
+			imgCurrentLevel.setImageResource(R.drawable.one);
+			imgNextLevel.setImageResource(R.drawable.two);
 		}
 		
 		return result;
 	}
+	
+	/**
+	 * This method calculates the rank of current track based on distance and average speed
+	 * and returns achieved points from this track.
+	 */
 	private int calculateMedal()
 	{
 		int result =0;
@@ -311,43 +335,55 @@ public class Results extends FragmentActivity {
 	
 	/**
 	 * The function for taking a screenshot of the view given as
-	 * parameter. It returns the bitmap (screenshot) created. 
+	 * parameter. It returns the bitmap (screenshot) created.
+	 * Also saves the screnshot to a file in device's storage. 
 	 */
 	public Bitmap screenShot(final View view) {
 		
-		
+		/**
+		 * Because Google Maps uses openGL ES to take a screenshot of the screen including
+		 * Google Maps fragments this method first takes a screenshot of only GoogleMaps fragment this is done
+		 * by calling snapshot method of mapView variable and passing callback variable as argument.
+		 * Next it takes a regular screenshot of the screen(Layout1) this shows the Google Maps 
+		 * all white and finally merges these two screenshots in a single bitmap which is saved to storage
+		 * and returned by the method.
+		 */
 	        SnapshotReadyCallback callback = new SnapshotReadyCallback() {
 	        
 	            @Override
 	            public void onSnapshotReady(Bitmap snapshot) {
 	                try {
 	                    view.setDrawingCacheEnabled(true);
-	                    
+	                 
+	                    //Take screenshot of Layout1
 	                    Bitmap backBitmap = view.getDrawingCache();
-	                    Bitmap bmOverlay = Bitmap.createBitmap(
-	                            backBitmap.getWidth(), backBitmap.getHeight(),
-	                            backBitmap.getConfig());
+	                    
+	                    //Create final(merged) Bitmap 
+	                    Bitmap bmOverlay = Bitmap.createBitmap(backBitmap.getWidth(), backBitmap.getHeight(),backBitmap.getConfig());
 	                    Canvas canvas = new Canvas(bmOverlay);
+	                    
+	                    //Draw taken screnshots of Screen and GoogleMaps to final bitmap
 	                    canvas.drawBitmap(backBitmap, new Matrix(), null);
 	                    canvas.drawBitmap(snapshot, 0, txtRank.getBottom()+2, null);
-	                    Filename=Environment.getExternalStorageDirectory()
-                                + "/NgajLastScreenShot"
-                                +".png";
 	                    
-	                   FileOutputStream out = new FileOutputStream(Filename);
+	                    //Save final bitmap(bmpOverlay) to storage
+	                    Filename=Environment.getExternalStorageDirectory()+ "/NgajLastScreenShot"+".png";
+	                    FileOutputStream out = new FileOutputStream(Filename);
 	                    bmOverlay.compress(Bitmap.CompressFormat.PNG, 90, out);
                     
-	                } catch (Exception e) {
-	                    e.printStackTrace();
+	                } 
+	                catch (Exception e) {
+	                    
 	                }
 	            }
 	        };
 
+	        /**
+	         * Take snapshot of GoogleMaps fragment this calls the code above and passes
+	         * the bitmap snapshot of Google Maps fragment as parameter.
+	         */
 	        mapView.snapshot(callback);
 	        return BitmapFactory.decodeFile(Environment.getExternalStorageDirectory()+ "/NgajLastScreenShot"+".png");
-	        		
-	          
-		
 	}
 
 

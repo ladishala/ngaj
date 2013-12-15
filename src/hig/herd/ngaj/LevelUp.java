@@ -34,8 +34,8 @@ import android.widget.Toast;
 public class LevelUp extends Activity {
 
 	/**
-	 * Declare social networking share components
-	 * and the map components
+	 * Declare social networking share components,
+	 * UI components and activity variables.
 	 */
 	
 	SocialAuthAdapter adapter;
@@ -53,23 +53,27 @@ public class LevelUp extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_level_up);
 		
+		
+		//Read achieved level from intent which started the activity
 		Intent i = getIntent();
 		Level = i.getIntExtra("Level", 0);
 		
+		//Initialize UI components
 		bar = (LinearLayout) findViewById(R.id.linearbar3);
-		
 		Layout1=(RelativeLayout)findViewById(R.id.Layout3);
 		txtLevel=(TextView)findViewById(R.id.txtLevelUp);
 		
+		//Initialize social authentication adapter
 		adapter = new SocialAuthAdapter(new ResponseListener());
 
-		// Add providers
+		// Add providers to social authentication adapter.
 		adapter.addProvider(Provider.FACEBOOK, R.drawable.facebook);
 		adapter.addProvider(Provider.TWITTER, R.drawable.twitter);
 		adapter.addProvider(Provider.MMS, R.drawable.other);
 		adapter.addProvider(Provider.EMAIL, R.drawable.camera);
 		adapter.enable(bar);
 		
+		//Call method calculateText which calculates the text shown on UI
 		calculateText();
 	}
 
@@ -80,6 +84,9 @@ public class LevelUp extends Activity {
 		return true;
 	}
 	
+	/*
+	 * This method calculates the text to be shown on UI based on achieved level.
+	 */
 	private void calculateText()
 	{
 		String strResult="";
@@ -113,7 +120,8 @@ public class LevelUp extends Activity {
 	
 	/**
 	 * The function for taking a screenshot of the view given as
-	 * parameter. It returns the bitmap (screenshot) created. 
+	 * parameter. It returns the bitmap (screenshot) created and
+	 * also saves the screnshot to device's storage. 
 	 */
 	public Bitmap screenShot(final View view) {
 		

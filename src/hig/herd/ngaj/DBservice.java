@@ -21,7 +21,9 @@ public class DBservice extends IntentService {
 
 	@Override
 	protected void onHandleIntent(Intent intent) {
-		// TODO Auto-generated method stub
+		/**
+		 * Read values recieved via intent which started the service.
+		 */
 		String Name=intent.getStringExtra("Name");
 		String strDistance = intent.getStringExtra("Distance");
 		float Distance=Float.parseFloat(strDistance);
@@ -35,6 +37,9 @@ public class DBservice extends IntentService {
 		String strDate = dateFormatter.format(today);
 		int size = intent.getIntExtra("Size", 0);
 		
+		/**
+		 * Save the just read values into local database if needed create the database and tables.
+		 */
 		
 		db=openOrCreateDatabase("NGAJ.db",MODE_PRIVATE,null);
 		db.execSQL("Create Table if not exists tblTracks (ID INTEGER PRIMARY KEY AUTOINCREMENT,Name Varchar,Distance FLOAT,Time Varchar,SpeedExtras Varchar, Steps Integer,Date DateTime)");
